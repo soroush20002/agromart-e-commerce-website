@@ -1,6 +1,9 @@
 "use client";
 import LoadingOverlay from "@/app/_components/LoadingOverlay";
-import GlobalApi, { sendTelegramMessage, verifyZarinpalPayment } from "@/app/_utils/GlobalApi";
+import GlobalApi, {
+  sendTelegramMessage,
+  verifyZarinpalPayment,
+} from "@/app/_utils/GlobalApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -11,6 +14,7 @@ import { usePathname } from "next/navigation";
 import UpdateCartContext from "@/app/_context/UpdateCartContext";
 import { toast } from "sonner";
 import PaymentRedirectGuard from "@/app/_components/PaymentRedirectGuard";
+import { ConfigProvider, Radio } from "antd";
 
 function Checkout() {
   const pathname = usePathname();
@@ -33,6 +37,8 @@ function Checkout() {
   const [zip, setZip] = useState("");
   const [address, setAddress] = useState("");
   const [ones, setones] = useState(true);
+  const [placement, setPlacement] = useState("PP");
+  const [finalAmount, setFinalAmount] = useState(0);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -92,11 +98,18 @@ function Checkout() {
   useEffect(() => {
     let total = 0;
     cartItemList.forEach((element) => {
-      total = total + element.amount;
+      total += element.amount;
     });
-    setSubTotal(total.toFixed(0));
-    console.log("TTTT:", total);
-  }, [cartItemList]);
+
+    const formattedTotal = parseFloat(total.toFixed(0));
+    setSubTotal(formattedTotal);
+
+    if (placement === "PP") {
+      setFinalAmount(formattedTotal * 10 + 500000);
+    } else {
+      setFinalAmount(formattedTotal * 10);
+    }
+  }, [cartItemList, placement]);
 
   useEffect(() => {
     const authority = searchParams.get("Authority");
@@ -104,12 +117,14 @@ function Checkout() {
 
     if ((status === "OK" || status === "NOK") && authority) {
       setLoading(true);
+      const storedFinalAmount = sessionStorage.getItem("finalAmount");
+      const storedPlacement = sessionStorage.getItem("placement");
 
       if (status === "OK" && parseFloat(subTotal) > 0) {
         const timer = setTimeout(() => {
           verifyZarinpalPayment({
             authority,
-            amount: (parseFloat(subTotal) * 10) + 500000,
+            amount: parseFloat(storedFinalAmount),
           })
             .then(async (res) => {
               if (res.data.code === 100) {
@@ -126,47 +141,68 @@ function Checkout() {
                     data: {
                       ...orderInfo,
                       totalOrderAmount: Number(orderInfo.totalOrderAmount),
-                      paymentId: String(paymentId),
+                      paymentId: String(paymentId + " ( در حال پردازش ) "),
                     },
                   };
 
                   console.log("FP", finalPayload);
                   sendTelegramMessage(`user ${user?.username} => Ordered`);
-              
 
                   try {
-                    const resp = await GlobalApi.createOrder(finalPayload, jwt).then(resp=>{
-                      cartItemList.forEach((item,index)=>{
-                        GlobalApi.deleteCartItem(item.documentId,jwt).then(resp=>{
-                          setUpdateCart(!updateCart);
-                        })
-                      })
-                      router.replace('/order-confirmation')
-                    })
+                    const resp = await GlobalApi.createOrder(
+                      finalPayload,
+                      jwt
+                    ).then((resp) => {
+                      cartItemList.forEach((item, index) => {
+                        GlobalApi.deleteCartItem(item.documentId, jwt).then(
+                          (resp) => {
+                            setUpdateCart(!updateCart);
+                          }
+                        );
+                      });
+                      router.replace("/order-confirmation");
+                    });
 
                     console.log("OC::", resp);
 
                     sessionStorage.removeItem("orderInfo");
+                    sessionStorage.removeItem("finalAmount");
+                    sessionStorage.removeItem("placement");
                   } catch (err) {
                     console.error("Error sending data", err);
                     sessionStorage.removeItem("orderInfo");
-                    sendTelegramMessage(`user ${user?.username} => ERROR in payment verify`);
+                    sessionStorage.removeItem("finalAmount");
+                    sessionStorage.removeItem("placement");
+
+                    sendTelegramMessage(
+                      `user ${user?.username} => ERROR in payment verify`
+                    );
                   }
                 } else {
                   console.warn("OS!");
                   sessionStorage.removeItem("orderInfo");
+                  sessionStorage.removeItem("finalAmount");
+                  sessionStorage.removeItem("placement");
                 }
               } else {
                 toast(" پرداخت ناموفق❌ ");
-                sendTelegramMessage(`user ${user?.username} => ERROR in payment verify`);
+                sendTelegramMessage(
+                  `user ${user?.username} => ERROR in payment verify`
+                );
                 sessionStorage.removeItem("orderInfo");
+                sessionStorage.removeItem("finalAmount");
+                sessionStorage.removeItem("placement");
               }
             })
             .catch((err) => {
               console.error("PERR", err);
               toast("خطا هنگام وریفای پرداخت❌");
-              sendTelegramMessage(`user ${user?.username} => ERROR in payment verify `);
+              sendTelegramMessage(
+                `user ${user?.username} => ERROR in payment verify `
+              );
               sessionStorage.removeItem("orderInfo");
+              sessionStorage.removeItem("finalAmount");
+              sessionStorage.removeItem("placement");
             })
             .finally(() => {
               setLoading(false);
@@ -176,8 +212,13 @@ function Checkout() {
         return () => clearTimeout(timer);
       } else if (status === "NOK") {
         toast("پرداخت توسط کاربر لغو شد❌");
-        sendTelegramMessage(`user ${user?.username} => payment canceled by user `);
+        sendTelegramMessage(
+          `user ${user?.username} => payment canceled by user `
+        );
         sessionStorage.removeItem("orderInfo");
+        sessionStorage.removeItem("finalAmount");
+        sessionStorage.removeItem("placement");
+
         setLoading(false);
       }
     }
@@ -221,7 +262,7 @@ email: ${payload.data.email}`);
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: (parseFloat(subTotal) * 10) + 500000,
+          amount: finalAmount,
           callback_url: "https://agrimarket.liara.run/checkout",
           description: "توضیحات پرداخت",
         }),
@@ -230,7 +271,12 @@ email: ${payload.data.email}`);
       const data = await res.json();
 
       if (data.data?.code === 100) {
-        sendTelegramMessage(`user ${user?.username} => transferd to the payment`);
+        sendTelegramMessage(
+          `user ${user?.username} => transferd to the payment`
+        );
+        sessionStorage.setItem("finalAmount", finalAmount.toString());
+        sessionStorage.setItem("placement", placement);
+
         window.location.href = `https://sandbox.zarinpal.com/pg/StartPay/${data.data.authority}`;
       } else {
         console.error("PN:", data);
@@ -253,7 +299,7 @@ email: ${payload.data.email}`);
 
   return (
     <div dir="rtl" className="w-full">
-    <PaymentRedirectGuard/>
+      <PaymentRedirectGuard />
       <h2 className="p-3 bg-green-800 text-xl font-bold text-center text-white">
         پرداخت
       </h2>
@@ -278,6 +324,7 @@ email: ${payload.data.email}`);
                   onChange={(e) => setUsername(e.target.value)}
                 />
                 <Input
+                  hidden={placement == "hh"}
                   placeholder="ایمیل (اختیاری)"
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -286,14 +333,68 @@ email: ${payload.data.email}`);
                   onChange={(e) => setPhone(e.target.value)}
                 />
                 <Input
+                  hidden={placement == "hh"}
                   placeholder="کد پستی"
+                  onChange={(e) => setZip(e.target.value)}
+                />
+                <Input
+                  hidden={placement == "PP"}
+                  placeholder="کد ملی"
                   onChange={(e) => setZip(e.target.value)}
                 />
                 <div className="md:col-span-2">
                   <Input
+                    hidden={placement == "hh"}
                     placeholder="آدرس"
                     onChange={(e) => setAddress(e.target.value)}
                   />
+                </div>
+              </div>
+              <div className="w-full mt-4">
+                <ConfigProvider
+                  direction="rtl"
+                  theme={{
+                    token: {
+                      fontFamily: "Vazirmatn, sans-serif",
+                      colorPrimary: "#3f6600",
+                      color: "lime-10",
+                    },
+                  }}
+                >
+                  {" "}
+                  <Radio.Group
+                    value={placement}
+                    onChange={(e) => setPlacement(e.target.value)}
+                    className="w-full flex mt-4"
+                    style={{
+                      width: "100%",
+                      display: "flex",
+                      marginTop: "16px",
+                    }}
+                  >
+                    <Radio.Button value="PP" className="flex-1 text-center">
+                      ارسال با پست
+                    </Radio.Button>
+                    <Radio.Button value="hh" className="flex-1 text-center">
+                      تحویل حضوری
+                    </Radio.Button>
+                  </Radio.Group>
+                </ConfigProvider>
+                <div className="mt-4" hidden={placement == "PP"}>
+                  <h2>
+                    شما می‌توانید با انتخاب گزینه "تحویل حضوری"، بدون پرداخت
+                    هزینه ارسال، با مراجعه به فروشگاه سفارش خود را مستقیماً
+                    دریافت نمایید. برای این منظور، کافی‌ست با مراجعه به گیلان،
+                    صومعه‌سرا، تولم‌شهر، جنب پل، خدمات کشاورزی غفوری، سفارش خود
+                    را تحویل بگیرید.
+                  </h2>
+                </div>
+                <div className="mt-4" hidden={placement == "hh"}>
+                  <h2>
+                    سفارش شما از طریق پست پیشتاز ارسال می‌شود. پس از ثبت سفارش،
+                    وضعیت ارسال و کد رهگیری را می‌توانید در بخش سفارشات من در
+                    حساب کاربری‌تان مشاهده کنید.
+                  </h2>
                 </div>
               </div>
             </div>
@@ -306,7 +407,7 @@ email: ${payload.data.email}`);
                 <div className="font-bold flex justify-between">
                   <span>جمع کل :</span>{" "}
                   {!loading3 ? (
-                    <span> {subTotal} تومان</span>
+                    <span> {subTotal.toLocaleString()} تومان</span>
                   ) : (
                     <div className=" scale-50 ">
                       <OrbitProgress
@@ -324,7 +425,14 @@ email: ${payload.data.email}`);
                 <div className="flex justify-between">
                   <span>هزینه ارسال :</span>{" "}
                   {!loading3 ? (
-                    <span> 50000 تومان</span>
+                    <span>
+                      {" "}
+                      {placement == "hh" ? (
+                        <h2>0 تومان</h2>
+                      ) : (
+                        <h2>50,000 تومان</h2>
+                      )}{" "}
+                    </span>
                   ) : (
                     <div className=" scale-50 ">
                       <OrbitProgress
@@ -342,7 +450,7 @@ email: ${payload.data.email}`);
                 <div className="font-bold flex justify-between text-lg">
                   <span>مبلغ نهایی :</span>{" "}
                   {!loading3 ? (
-                    <span> {parseFloat(subTotal) + 50000} تومان</span>
+                    <span> {(parseFloat(finalAmount)/10).toLocaleString()} تومان</span>
                   ) : (
                     <div className=" scale-50 ">
                       <OrbitProgress
@@ -359,8 +467,7 @@ email: ${payload.data.email}`);
                 <Button
                   className="mt-4 flex items-center justify-center gap-2 font-bold w-full"
                   onClick={handlePayment}
-                  disabled={loading3 || !(address && zip && phone && username)}
-                  
+                  disabled={loading3 || placement == "hh" ? !(phone && username && zip) : !(address && zip && phone && username)}
                 >
                   {loading2 ? "در حال انتقال..." : "پرداخت"}
                 </Button>

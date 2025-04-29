@@ -405,7 +405,7 @@ const Header = () => {
               </div>
               <div className=" m-[0px] absolute w-[100%] bottom-0 flex flex-col p-1 left-[0px] bg-white ">
                 <h2 className="text-lg font-bold flex justify-between relative right-[2px] ">
-                  مجموع:<span>{subTotal.toLocaleString()} تومان</span>
+                  مجموع:<span>{Number(subTotal).toLocaleString()} تومان</span>
                 </h2>
                 <Button
                   disabled={!cartItemListl}
