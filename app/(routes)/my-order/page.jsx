@@ -52,15 +52,17 @@ function Page() {
             accordion
             items={orderList.map((order) => ({
               key: order.id,
-              label: `سفارش ${order?.paymentId} (${moment(
-                order.createdAt
-              ).format("jYYYY/jMM/jDD HH:mm")})`,
+              label: `سفارش ${order?.paymentId}`,
               children: (
                 <div>
                   <p>
                     مبلغ کل: {order?.totalOrderAmount?.toLocaleString()} تومان
                   </p>
-                  <p>آدرس: {order?.address}</p>
+                  <p>
+                    تاریخ ثبت سفارش:{" "}
+                    {moment(order.createdAt).format("jYYYY/jMM/jDD HH:mm")}{" "}
+                  </p>
+                  {order.address == "" ? null : <p>آدرس: {order?.address}</p>}
                   <p>کد پستی: {order?.zip}</p>
                   <p>به نام: {order?.username}</p>
                   <p>شماره تماس: {order?.phone}</p>

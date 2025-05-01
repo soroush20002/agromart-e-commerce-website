@@ -74,6 +74,8 @@ function ProductItemDetail({ product }) {
         <h2 className="font-bold text-sm text-gray-500 whitespace-pre-line ">
           {product?.description}
         </h2>
+        { Number(product?.itemQuantityType) ? <h2>موجود در انبار : {product?.itemQuantityType} </h2> : <h2 className="text-xl  text-red-600 " >ناموجود</h2> }
+        
         <h2 className="font-bold text-2xl">{product?.mrp.toLocaleString()} تومان</h2>
         <div>
           {/* <h2 className='font-medium text-lg mb-[5px] ' >Quantity:{product?.itemQuantityType}</h2> */}
@@ -83,6 +85,7 @@ function ProductItemDetail({ product }) {
                 <button
                   className="hover:scale-150 transition-all ease-in-out "
                   onClick={() => setQuantity(quantity + 1)}
+                  disabled={Number(product?.itemQuantityType) <= quantity }
                 >
                   <img src="/plus.png" alt="plus" width={19} height={19} />
                 </button>
@@ -117,6 +120,7 @@ function ProductItemDetail({ product }) {
                 dir="rtl"
                 className="flex gap-3 self-start  "
                 onClick={() => addToCart()}
+                disabled={!Number(product?.itemQuantityType)}
               >
                 <ShoppingBasket />
                 افزودن به سبد

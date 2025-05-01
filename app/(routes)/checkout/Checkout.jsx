@@ -263,7 +263,7 @@ email: ${payload.data.email}`);
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           amount: finalAmount,
-          callback_url: "https://agrimarket.liara.run/checkout",
+          callback_url: "https://agrm.ir/checkout",
           description: "توضیحات پرداخت",
         }),
       });
