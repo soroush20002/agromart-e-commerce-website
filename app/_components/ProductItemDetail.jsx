@@ -67,7 +67,7 @@ function ProductItemDetail({ product }) {
         alt="icon"
         width="300"
         height="300"
-        className="h-full w-full object-fill  rounded-2xl  "
+        className="h-full w-full object-contain  rounded-2xl  "
       />
       <div className="flex flex-col gap-3 flex-1 text-right">
         <h2 className="font-bold text-2xl">{product?.namefa}</h2>
