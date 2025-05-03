@@ -36,7 +36,6 @@ import { toast } from "sonner";
 import { Drawer } from "antd";
 import { useRef } from "react";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
-import { UAParser } from "ua-parser-js";
 
 const Header = () => {
   const searchBoxRef = useRef(null);
@@ -55,40 +54,21 @@ const Header = () => {
   const [open, setOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  
-  useEffect(() => {
-    const initInfo = async () => {
- 
-      const fp = await FingerprintJS.load();
-      const fpResult = await fp.get();
-      const visitorId = fpResult.visitorId;
-  
 
-      const parser = new UAParser();
-      const uaResult = parser.getResult();
-  
-      const message = `
-user:
-F ID: ${visitorId}
-  
-Device Info:
-Model: ${uaResult.device.model || 'Unknown'}
-Brand: ${uaResult.device.vendor || 'Unknown'}
-Type: ${uaResult.device.type || 'Unknown'}
-  
-System:
-${uaResult.os.name || 'Unknown'} ${uaResult.os.version || ''}
-  
-Browser:
-${uaResult.browser.name || 'Unknown'} ${uaResult.browser.version || ''}
-      `;
-  
-      sendTelegramMessage(message);
+  useEffect(() => {
+    const initFingerprint = async () => {
+      const fp = await FingerprintJS.load();
+
+      const result = await fp.get();
+
+      const visitorId = result.visitorId;
+
+
+      sendTelegramMessage(`User :\n${visitorId}`);
     };
-  
-    initInfo();
+
+    initFingerprint();
   }, []);
-  
 
   useEffect(() => {
     const handleClickOutside = (event) => {
