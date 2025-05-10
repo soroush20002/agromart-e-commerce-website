@@ -53,7 +53,7 @@ export default function ChatPage() {
         { id: messages.length + 1, text: newMessage, sender: "user" },
       ]);
       try {
-        await axios.post(`http://localhost:1337/api/sups`, {
+        await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/sups`, {
           data: {
             uText: newMessage,
             users_permissions_users: user.id,

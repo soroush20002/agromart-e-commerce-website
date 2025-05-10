@@ -59,7 +59,7 @@ function Header2() {
 
   const handleSearch = async (e) => {
     const value = e.target.value;
-    sendTelegramMessage(`user ${user?.username} is searching: (${value})`)
+    sendTelegramMessage(`user ${user?.username} is searching: (${value})`);
     setSearchText(value);
 
     if (value.trim().length > 1) {
@@ -124,7 +124,12 @@ function Header2() {
           <Link
             key={index}
             href={item.href}
-            className="w-auto max-[768px]:flex-1 max-[712px]:w-1/4 text-center"
+            className="
+    w-auto 
+    max-[768px]:flex-1 
+    max-[400px]:w-[48%] 
+    text-center
+  "
           >
             <ConfigProvider
               direction="rtl"
@@ -162,13 +167,12 @@ function Header2() {
         <div
           dir="rtl"
           className={`
-            hidden
-            max-[768px]:flex
-            border rounded-md px-2 py-1 items-center gap-2
-            max-[712px]:w-full
-            max-[768px]:flex-1
-            mt-2 max-[712px]:mt-4
-          `}
+    hidden
+    max-[768px]:flex
+    border rounded-md px-2 py-1 items-center gap-2
+    w-full
+    mt-2
+  `}
         >
           <Search className="text-gray-500" />
           <input
