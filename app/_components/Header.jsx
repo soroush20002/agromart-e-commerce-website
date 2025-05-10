@@ -298,7 +298,7 @@ const Header = () => {
                 </Button>
               </ConfigProvider>
             </Link>
-            <Link onClick={M} href={"/"}>
+            <Link onClick={M} href={"/mosh"}>
               <ConfigProvider
                 direction="rtl"
                 theme={{

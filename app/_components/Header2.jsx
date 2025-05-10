@@ -101,7 +101,7 @@ function Header2() {
   };
 
   return (
-    <div className="hidden max-[1024px]:flex flex-col gap-3 items-center border rounded-xl p-4 mx-4 mt-3 mb-4 relative bg-white shadow-md">
+    <div className="hidden max-[1024px]:flex flex-col gap-3 items-center border rounded-xl p-4 mx-1 mt-3 mb-4 relative bg-white shadow-md">
       <div
         className="
           w-full 
@@ -119,7 +119,7 @@ function Header2() {
           { label: "صفحه اصلی", href: "/" },
           { label: "پشتیبانی", href: "/support" },
           { label: "درباره ما", href: "/about-us" },
-          { label: "مشاوره رایگان", href: "/" },
+          { label: "مشاوره رایگان", href: "/mosh" },
         ].map((item, index) => (
           <Link
             key={index}

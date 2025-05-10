@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        domains: ['localhost', 'agri.liara.run'],
+        domains: ['localhost', '192.168.126.87'],
     }
 }; 
 
