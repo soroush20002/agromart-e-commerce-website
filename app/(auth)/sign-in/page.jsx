@@ -55,7 +55,7 @@ entered password: ${password} `);
     <div
       lang="fa"
       dir="rtl"
-      className="flex items-center justify-center mt-5"
+      className="flex items-center justify-center mt-5 px-2 "
     >
       <div className="w-[400px] h-[480px] relative">
         <div className="absolute w-[85px] h-[85px] flex items-center justify-center border-2 border-green-500 rounded-full bg-white z-10 left-1/2 -translate-x-1/2 shadow-lg">

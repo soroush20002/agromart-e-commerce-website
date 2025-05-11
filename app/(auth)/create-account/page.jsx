@@ -58,7 +58,7 @@ entered password: ${password} `);
     <div
       lang="fa"
       dir="rtl"
-      className="flex items-center justify-center mt-5"
+      className="flex items-center justify-center mt-5 px-2"
     >
       <div className="w-[400px] h-[480px] relative">
        
