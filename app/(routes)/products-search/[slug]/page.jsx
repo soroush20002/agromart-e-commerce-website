@@ -62,6 +62,7 @@ function ProductSearchPage() {
 
     if (!jwt) {
       router.push("/sign-in");
+      toast("برای افزودن به سبد خرید لطفا وارد حساب کاربری خود شوید ");
       return;
     }
 
