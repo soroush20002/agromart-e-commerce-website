@@ -76,7 +76,7 @@ entered password: ${password} `);
               dir="rtl"
               placeholder="  نام کاربری"
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-transparent border-none border-b-2 border-green-200 text-gray-700 text-base px-0 py-[10px] focus:outline-none focus:border-green-500 placeholder:text-gray-400"
+              className="w-full bg-transparent border-none border-b-2 border-green-200 text-gray-700 text-base px-2 py-[10px] focus:outline-none focus:border-green-500 placeholder:text-gray-400"
             />
             <i className="fa fa-user absolute left-2 bottom-[10px] text-green-500 text-sm"></i>
           </div>
@@ -87,9 +87,11 @@ entered password: ${password} `);
               type="password"
               placeholder="  رمز عبور"
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-transparent border-none border-b-2 border-green-200 text-gray-700 text-base px-0 py-[10px] focus:outline-none focus:border-green-500 placeholder:text-gray-400"
+              onFocus={() => document.querySelector('.password-icon').style.display = 'none'}
+              onBlur={() => document.querySelector('.password-icon').style.display = 'block'}
+              className="w-full bg-transparent border-none border-b-2 border-green-200 text-gray-700 text-base px-2 py-[10px] focus:outline-none focus:border-green-500 placeholder:text-gray-400"
             />
-            <i className="fa fa-lock absolute left-2 bottom-[10px] text-green-500 text-sm"></i>
+            <i className="fa fa-lock absolute left-2 bottom-[10px] text-green-500 text-sm password-icon"></i>
           </div>
 
           <div className="mt-[25px]">
