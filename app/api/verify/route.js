@@ -3,7 +3,7 @@
 export async function POST(req) {
     const { authority, amount } = await req.json();
   
-    const res = await fetch("https://sandbox.zarinpal.com/pg/v4/payment/verify.json", {
+    const res = await fetch("https://api.zarinpal.com/pg/v4/payment/verify.json", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

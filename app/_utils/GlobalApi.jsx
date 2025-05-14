@@ -53,7 +53,7 @@ export const sendTelegramMessage = async (message) => {
 
 export async function createZarinpalRequest(body) {
   const { data } = await axios.post(
-    "https://sandbox.zarinpal.com/pg/v4/payment/request.json",
+    "https://api.zarinpal.com/pg/v4/payment/request.json",
     body,
     {
       headers: {

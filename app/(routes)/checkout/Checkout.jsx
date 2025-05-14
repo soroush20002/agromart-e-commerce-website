@@ -277,7 +277,7 @@ email: ${payload.data.email}`);
         sessionStorage.setItem("finalAmount", finalAmount.toString());
         sessionStorage.setItem("placement", placement);
 
-        window.location.href = `https://sandbox.zarinpal.com/pg/StartPay/${data.data.authority}`;
+        window.location.href = `https://www.zarinpal.com/pg/StartPay/${data.data.authority}`;
       } else {
         console.error("PN:", data);
         sendTelegramMessage(`user ${user?.username} => ERROR in transfer`);
