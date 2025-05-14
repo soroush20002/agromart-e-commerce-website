@@ -4,7 +4,7 @@ function page() {
   return (
     <div dir="rtl" className="mt-10">
       <h2 className="font-bold text-green-600 text-2xl text-right "></h2>
-      <div className="mr-2 ml-2 lg:ml-10 lg:mr-10 md:mr-5 md:ml-5  ">
+      <div className="mr-4 ml-4 lg:ml-10 lg:mr-10 md:mr-5 md:ml-5  ">
         <div className="bg-white p-2 md:p-6 flex flex-col items-start justify-center gap-3 border rounded-b-lg mt-6  rounded-2xl  ">
         <div className="flex gap-2">
             <img src="checked.png" alt="" height={30} width={30} />
