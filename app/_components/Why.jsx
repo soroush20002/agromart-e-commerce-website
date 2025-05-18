@@ -55,7 +55,7 @@ const Why = () => {
             trigger: card,
             start: "top 90%",
             toggleActions: "play reverse play reverse",
-            markers: true,
+            markers: false,
             onEnter: () => {
               gsap.to(card, {
                 opacity: 1,

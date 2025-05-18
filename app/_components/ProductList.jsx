@@ -30,7 +30,6 @@ function ProductList({productList}) {
         )
       })
     }
-    // Cleanup triggers on unmount
     return () => ScrollTrigger.getAll().forEach(t => t.kill())
   }, [productList])
 
