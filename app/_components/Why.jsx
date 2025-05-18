@@ -53,7 +53,7 @@ const Why = () => {
           ease: "power3.out",
           scrollTrigger: {
             trigger: card,
-            start: "top 90%",
+            start: "top 95%",
             toggleActions: "play reverse play reverse",
             markers: false,
             onEnter: () => {
