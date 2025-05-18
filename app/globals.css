@@ -1,9 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Lalezar&family=Markazi+Text:wght@400..700&family=Vazirmatn:wght@100..900&display=swap');
 @import "tailwindcss";
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+html, body {
+  overflow-x: hidden;
+  position: relative;
+  width: 100%;
+}
 
-
+* {
+  box-sizing: border-box;
+}
 
 body {
   font-family: "Vazirmatn", sans-serif !important;
@@ -12,9 +22,7 @@ body {
   font-style: normal;
   font-weight: bold;
   background-color: #f0fdf4;
-  overflow-x: hidden;
 }
-
 
 @theme inline {
   --color-background: var(--background);

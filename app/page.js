@@ -13,11 +13,13 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen w-full">
-      <div className="pl-2 md:pl-10 pr-2 md:pr-10 pt-0 lg:pt-9 md:pt-0 overflow-x-hidden w-full max-w-[100vw]">
-        <Slider sliderList={sliderList} />
-        <CategoryList categoryList={categoryList} />
-        <ProductList productList={productList} />
-        <Why/>
+      <div className="pl-2 md:pl-10 pr-2 md:pr-10 pt-0 lg:pt-9 md:pt-0 w-full">
+        <div className="relative">
+          <Slider sliderList={sliderList} />
+          <CategoryList categoryList={categoryList} />
+          <ProductList productList={productList} />
+          <Why/>
+        </div>
       </div>
     </main>
   );
