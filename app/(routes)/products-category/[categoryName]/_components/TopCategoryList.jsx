@@ -1,15 +1,19 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 import LoadingOverlay from "@/app/_components/LoadingOverlay";
 import { sendTelegramMessage } from "@/app/_utils/GlobalApi";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+gsap.registerPlugin(ScrollTrigger);
 
 function TopCategoryList({ categoryList, selectedCategory }) {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
   const [jwt, setJwt] = useState(null);
+  const catRefs = useRef([]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -19,6 +23,7 @@ function TopCategoryList({ categoryList, selectedCategory }) {
       setJwt(storedJwt);
     }
   }, []);
+
 
   const load = async () => {
     sendTelegramMessage(`user ${user?.username} => Category `);
@@ -39,7 +44,7 @@ function TopCategoryList({ categoryList, selectedCategory }) {
   }, [selectedCategory]);
 
   return (
-    <div className="flex gap-5 mt-5 overflow-auto mx-7 md:mx-20 justify-center">
+    <div className="flex gap-5 mt-5 overflow-auto overflow-y-hidden mx-7 md:mx-20 justify-center">
       {categoryList.map((category, index) => {
         const isSelected =
           activeCategory?.toLowerCase() === category?.name?.toLowerCase();
@@ -48,8 +53,9 @@ function TopCategoryList({ categoryList, selectedCategory }) {
             onClick={load}
             href={`/products-category/${category.name}`}
             key={index}
+            ref={el => catRefs.current[index] = el}
             className={clsx(
-              "flex flex-col items-center bg-green-200 gap-2 p-3 rounded-lg group cursor-pointer hover:bg-green-400 w-[150px] min-w-[100px] transition-all",
+              "flex flex-col items-center bg-green-200 gap-2 p-3 rounded-lg group cursor-pointer hover:bg-green-400 w-[150px] min-w-[100px] ",
               isSelected && "bg-green-900 text-white"
             )}
           >
