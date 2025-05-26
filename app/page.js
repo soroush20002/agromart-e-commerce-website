@@ -17,7 +17,9 @@ export default async function Home() {
         <div className="relative">
           <Slider sliderList={sliderList} />
           <CategoryList categoryList={categoryList} />
+          <h2 className='font-bold text-green-600  flex justify-center b text-2xl text-right mt-10 '> برخی از محصولات </h2>
           <ProductList productList={productList} />
+          <h2 className='font-bold text-green-600  flex justify-center b text-2xl text-right mt-10 '> چرا ما؟ </h2>
           <Why/>
         </div>
       </div>
