@@ -6,10 +6,25 @@ import Footer from "./_components/Footer";
 import Why from "./_components/Why";
 export const revalidate = 60;
 
+export const metadata = {
+  title: 'فروشگاه کشاورزی غفوری | خرید آنلاین تجهیزات کشاورزی',
+  description: 'خرید اینترنتی انواع ابزار و لوازم کشاورزی با بهترین قیمت از فروشگاه غفوری. ارسال به سراسر ایران با پشتیبانی رایگان.',
+  keywords: ['فروشگاه کشاورزی', 'ابزار کشاورزی', 'خرید لوازم باغبانی', 'غفوری'],
+  openGraph: {
+    title: 'فروشگاه کشاورزی غفوری',
+    description: 'بهترین فروشگاه اینترنتی برای خرید لوازم کشاورزی و باغبانی در ایران',
+    url: 'https://agrm.ir',
+    siteName: 'فروشگاه غفوری',
+    locale: 'fa_IR',
+    type: 'website',
+  },
+};
+
 export default async function Home() {
   const sliderList=await GlobalApi.getSliders();
   const categoryList=await GlobalApi.getCategoryList();
   const productList=await GlobalApi.getAllProducts();
+
 
   return (
     <main className="min-h-screen w-full">
