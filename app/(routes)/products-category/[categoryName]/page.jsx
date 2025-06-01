@@ -49,7 +49,7 @@ async function ProductCategory({ params }) {
                 </h1>
                 <TopCategoryList categoryList={categoryList} selectedCategory={categoryName} />
                 <div className="p-5 md:p-10">
-                    <ProductList productList={productList} />
+                    <ProductList productList={productList} slicenum={10000} />
                 </div>
             </div>
         );

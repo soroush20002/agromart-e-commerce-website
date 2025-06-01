@@ -6,7 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
 
-function ProductList({productList}) {
+function ProductList({productList , slicenum}) {
   const cardsRef = useRef([])
 
   useEffect(() => {
@@ -34,8 +34,8 @@ function ProductList({productList}) {
   }, [productList])
 
   const sortedProducts = [...productList].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-  const productListo = sortedProducts.slice(0, 8);
-
+  const productListo = sortedProducts.slice(0, slicenum);
+ 
   return (
     <div className='mt-10' >
         

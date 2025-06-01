@@ -57,18 +57,11 @@ const Header = () => {
   const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
-    const initFingerprint = async () => {
-      const fp = await FingerprintJS.load();
-
-      const result = await fp.get();
-
-      const visitorId = result.visitorId;
-
-
-      sendTelegramMessage(`User :\n${visitorId}`);
-    };
-
-    initFingerprint();
+    const deviceType = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+      ? "Mobile"
+      : "Desktop";
+    const screenResolution = `${window.screen.width}x${window.screen.height}`;
+    sendTelegramMessage(`User (agrm): ${deviceType}, Resolution: ${screenResolution}`);
   }, []);
 
   useEffect(() => {

@@ -33,7 +33,7 @@ export default async function Home() {
           <Slider sliderList={sliderList} />
           <CategoryList categoryList={categoryList} />
           <h2 className='font-bold text-green-600  flex justify-center b text-2xl text-right mt-10 '> برخی از محصولات </h2>
-          <ProductList productList={productList} />
+          <ProductList productList={productList} slicenum={8} />
           <h2 className='font-bold text-green-600  flex justify-center b text-2xl text-right mt-10 '> چرا ما؟ </h2>
           <Why/>
         </div>
