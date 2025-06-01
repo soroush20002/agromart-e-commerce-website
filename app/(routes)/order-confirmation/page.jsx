@@ -1,44 +1,18 @@
-"use client"
-import { sendTelegramMessage } from '@/app/_utils/GlobalApi'
-import { Button, ConfigProvider } from 'antd'
-import { Link } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import React from 'react'
+import React, { Suspense } from "react";
+import Orc from "./Orc"
 
-
-function page() {
-  const router= useRouter()
-  const order=()=>{
-    router.push('/my-order')
-    sendTelegramMessage(`user => order-page`)
-  }
+export const metadata = {
+  title: "تایید پرداخت",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+ 
+export default function CheckoutPage() {
   return (
-    <div className='flex font-bold justify-center items-center mt-15 ' >
-        <div className=' border-1 flex flex-col justify-center items-center gap-7 p-10  shadow-lg rounded-3xl ' >
-        <img src="successful.png" alt="s" width={150} height={150} />
-        
-        <h2 className="font-bold text-2xl ">سفارش با موفقیت ثبت شد </h2>
-
-            <ConfigProvider
-              direction="rtl"
-              theme={{
-                token: {
-                  fontFamily: "Vazirmatn, sans-serif",
-                  colorPrimary: "#3f6600",
-                },
-              }}
-            >
-              {" "}
-              <Button onClick={order} block size="large" style={{ fontSize: "18px" }} color="lime-10" variant="solid">
-                پیگیری سفارش
-              </Button>
-            </ConfigProvider>
-
-        </div>
-
-          
-    </div>
-  )
+    <Suspense fallback={<div className="p-10 text-center">Loading...</div>}>
+      <Orc/>
+    </Suspense>
+  );
 }
-
-export default page

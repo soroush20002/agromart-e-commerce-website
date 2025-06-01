@@ -93,7 +93,7 @@ const Why = () => {
             </div>
             <img
               src={card.icon}
-              alt={card.iconAlt}
+              alt=""
               className="w-16 h-16 mt-4 object-contain"
               loading="lazy"
             />

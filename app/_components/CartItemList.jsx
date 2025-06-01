@@ -24,9 +24,9 @@ function CartItemList({ cartItemList, onDeleteItem, loading2 }) {
             className="flex justify-between items-center p-2 mb-7"
           >
             <div className="flex gap-6 items-center ">
-              <img
+              <Image
                 src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${cart?.image}`}
-                alt="icon"
+                alt={cart.name}
                 width="70"
                 height="70"
                 className="border p-2"
@@ -49,7 +49,7 @@ function CartItemList({ cartItemList, onDeleteItem, loading2 }) {
                 />
               </div>
             ) : (
-              <img src="/delete.png"  width='28' height='28' alt="" 
+              <Image src="/delete.png"  width='28' height='28' alt='delete'
               className=" translate-x-[-20px] translate-y-[13px] cursor-pointer "
               onClick={() => handleDeleteItem(cart?.documentId)} />
 

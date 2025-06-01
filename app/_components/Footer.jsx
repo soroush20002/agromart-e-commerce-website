@@ -1,10 +1,13 @@
+import Image from 'next/image'
 import React from 'react'
 
 function Footer() {
   return (
     <footer lang='fa' dir='rtl' className=" mt-[30px] bg-white  lg:grid lg:grid-cols-5">
       <div className=" relative block h-32 lg:col-span-2 lg:h-full">
-        <img
+        <Image
+        width={700}
+        height={700}
           src="/map.png"
           alt=""
           className="absolute inset-0 h-full w-full object-cover rounded-e-3xl "
@@ -17,7 +20,7 @@ function Footer() {
             <div className="">
               <img src="/logo.png" className="" />
             </div>
-            <p >
+            <p>
               <span className=" font-bold text-xs tracking-wide text-gray-500 uppercase"> تماس با ما</span>
 
               <a href="#" className="block text-2xl font-medium text-gray-900 hover:opacity-75 sm:text-3xl">

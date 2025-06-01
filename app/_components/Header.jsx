@@ -36,6 +36,7 @@ import { toast } from "sonner";
 import { Drawer } from "antd";
 import { useRef } from "react";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import Image from "next/image";
 
 const Header = () => {
   const searchBoxRef = useRef(null);
@@ -247,7 +248,7 @@ const Header = () => {
   return (
     <div className="p-5 shadow-sm flex justify-between bg-white ">
       <div className="flex items-center gap-8">
-        <img src="/logo.png" alt="logo" width={200} height={150} />
+        <Image src="/logo.png" alt="" width={200} height={150} />
         <div className="hidden md:flex gap-3 items-center border rounded-full p-2 px-0 relative">
           <div className="hidden lg:block translate-x-2.5 ">
             <Link onClick={H} href={"/"}>
@@ -356,7 +357,7 @@ const Header = () => {
           <img
             onClick={showLoading}
             src="/sh1.png"
-            alt="logo"
+            alt=""
             width={35}
             height={35}
           />

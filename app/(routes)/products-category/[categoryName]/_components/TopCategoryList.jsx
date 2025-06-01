@@ -44,7 +44,7 @@ function TopCategoryList({ categoryList, selectedCategory }) {
   }, [selectedCategory]);
 
   return (
-    <div className="flex gap-5 mt-5 overflow-auto overflow-y-hidden mx-7 md:mx-20 justify-center">
+    <div className="flex gap-5 mt-15 overflow-auto overflow-y-hidden mx-7 md:mx-20 justify-center">
       {categoryList.map((category, index) => {
         const isSelected =
           activeCategory?.toLowerCase() === category?.name?.toLowerCase();

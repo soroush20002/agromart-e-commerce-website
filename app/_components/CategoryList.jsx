@@ -85,7 +85,7 @@ const CategoryList = ({ categoryList }) => {
     <div lang="fa" dir="rtl" className="mt-10">
       <h2 className="font-bold text-green-600 text-2xl"></h2>
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 gap-5 mt-5">
-        {categoryList.map((category, index) => (
+        {categoryList.slice(0, 7).map((category, index) => (
           <Link
             onClick={load}
             href={"/products-category/" + category.name}
@@ -95,13 +95,33 @@ const CategoryList = ({ categoryList }) => {
           >
             <Image
               src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${category?.image?.[0]?.url}`}
-              alt="icon"
+              alt={category?.namefa}
               width={50}
               height={50}
               className="group-hover:scale-125 transition-all ease-in-out"
             />
-            <h2 className="text-green-800">{category?.namefa}</h2>
+            <h1 className="text-green-800">{category?.namefa}</h1>
           </Link>
+        ))}
+        {categoryList.map((category, index) => (
+          category?.name === "new" || category?.name === "all-products" ? (
+            <Link
+              onClick={load}
+              href={"/products-category/" + category.name}
+              key={index}
+              ref={el => catRefs.current[index] = el}
+              className="flex flex-col md:hidden items-center bg-green-200 gap-2 p-3 rounded-lg group cursor-pointer hover:bg-green-400"
+            >
+              <Image
+                src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${category?.image?.[0]?.url}`}
+                alt={category?.namefa}
+                width={50}
+                height={50}
+                className="group-hover:scale-125 transition-all ease-in-out"
+              />
+              <h1 className="text-green-800">{category?.namefa}</h1>
+            </Link>
+          ) : null
         ))}
       </div>
       <LoadingOverlay loading={loading} />

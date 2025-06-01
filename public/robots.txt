@@ -1,5 +1,8 @@
 # *
 User-agent: *
+Disallow: /checkout
+Disallow: /my-order
+Disallow: /order-confirmation
 Allow: /
 
 # Host

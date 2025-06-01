@@ -8,6 +8,7 @@ import GlobalApi, { sendTelegramMessage } from "../_utils/GlobalApi";
 import { toast } from "sonner";
 import UpdateCartContext from "../_context/UpdateCartContext";
 import { OrbitProgress } from "react-loading-indicators";
+import Image from "next/image";
 
 function ProductItemDetail({ product }) {
   const [loading, setLoading] = useState(false);
@@ -63,18 +64,18 @@ function ProductItemDetail({ product }) {
       dir="rtl"
       className="grid grid-cols-1 md:grid-cols-2 p-3 text-black gap-5 rounded-2xl  "
     >
-      <img
+      <Image
         src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${product?.images?.[0]?.url}`}
-        alt="icon"
+        alt={product?.namefa}
         width="300"
         height="300"
         className="h-full w-full object-contain  rounded-2xl  "
       />
       <div className="flex flex-col gap-3 flex-1 text-right">
         <h2 className="font-bold text-2xl">{product?.namefa}</h2>
-        <h2 className="font-bold text-sm text-gray-500 whitespace-pre-line ">
+        <h1 className="font-bold text-sm text-gray-500 whitespace-pre-line ">
           {product?.description}
-        </h2>
+        </h1>
         { Number(product?.itemQuantityType) ? <h2>موجود در انبار : {product?.itemQuantityType} </h2> : <h2 className="text-xl  text-red-600 " >ناموجود</h2> }
         
         <h2 className="font-bold text-2xl">{product?.mrp.toLocaleString()} تومان</h2>

@@ -13,6 +13,7 @@ import {
 import ProductItemDetail from "./ProductItemDetail";
 import { Modal } from "antd";
 import { sendTelegramMessage } from "../_utils/GlobalApi";
+import Image from "next/image";
 
 function Producitem({ product }) {
   const [open, setOpen] = useState(false);
@@ -40,14 +41,14 @@ function Producitem({ product }) {
   };
   return (
     <div className="bg-white p-2 md:p-6 flex flex-col items-center justify-center gap-3 border rounded-b-lg mt-6 hover:scale-110 hover:shadow-lg transition-all ease-in-out cursor-pointer rounded-2xl  ">
-      <img
+      <Image
         src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${product?.images?.[0]?.url}`}
-        alt="icon"
+        alt={product?.namefa}
         width="500"
         height="200"
         className="h-[200px] w-[200px] object-contain rounded-2xl "
       />
-      <h2 className="font-bold text-lg text-center ">{product?.namefa}</h2>
+      <h1 className="font-bold text-lg text-center ">{product?.namefa}</h1>
       {product.sellingPrice && (
         <h2 className="line-through font-bold text-gray-500">
           {product.sellingPrice}{" "}

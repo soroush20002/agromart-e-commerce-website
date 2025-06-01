@@ -11,7 +11,7 @@ function page() {
         <div className="bg-white p-2 md:p-6 flex flex-col items-start justify-center gap-3 border rounded-b-lg mt-6  rounded-2xl  ">
         <div className="flex gap-2">
             <img src="checked.png" alt="" height={30} width={30} />
-            <h2 className="text-xl text-emerald-700 " >معرفی خدمات کشاورزی غفوری</h2>
+            <h1 className="text-xl text-emerald-700 " >معرفی خدمات کشاورزی غفوری</h1>
           </div>
           <h2>
             داروخانه و فروشگاه خدمات کشاورزی غفوری با بیش از ۱۰ سال سابقه فعالیت
