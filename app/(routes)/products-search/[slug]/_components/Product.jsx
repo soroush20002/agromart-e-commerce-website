@@ -120,7 +120,7 @@ function ProductSearchPage() {
           <div className="flex justify-center items-center">
             <img
               src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${product?.images?.[0]?.url}`}
-              alt="icon"
+              alt=""
               width="500"
               height="200"
               className="h-full w-[340px] object-contain border rounded-2xl"
@@ -143,7 +143,7 @@ function ProductSearchPage() {
                     onClick={() => setQuantity(quantity + 1)}
                     disabled={Number(product?.itemQuantityType) <= quantity }
                   >
-                    <img src="/plus.png" alt="plus" width={19} height={19} />
+                    <img src="/plus.png" alt="" width={19} height={19} />
                   </button>
                   <h2>{quantity}</h2>
                   <button
@@ -151,7 +151,7 @@ function ProductSearchPage() {
                     disabled={quantity === 1}
                     onClick={() => setQuantity(quantity - 1)}
                   >
-                    <img src="/minus.png" alt="minus" width={19} height={19} />
+                    <img src="/minus.png" alt="" width={19} height={19} />
                   </button>
                 </div>
                 <h2 className="text-sm font-bold">

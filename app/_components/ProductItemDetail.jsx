@@ -89,7 +89,7 @@ function ProductItemDetail({ product }) {
                   onClick={() => setQuantity(quantity + 1)}
                   disabled={Number(product?.itemQuantityType) <= quantity }
                 >
-                  <img src="/plus.png" alt="plus" width={19} height={19} />
+                  <img src="/plus.png" alt="" width={19} height={19} />
                 </button>
                 <h2>{quantity}</h2>
                 <button
@@ -97,7 +97,7 @@ function ProductItemDetail({ product }) {
                   disabled={quantity == 1}
                   onClick={() => setQuantity(quantity - 1)}
                 >
-                  <img src="/minus.png" alt="plus" width={19} height={19} />
+                  <img src="/minus.png" alt="" width={19} height={19} />
                 </button>
               </div>
               <h2 className="text-sm font-bold">
