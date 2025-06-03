@@ -1,12 +1,23 @@
-"use"
-import gsap from "gsap";
 import React from "react";
+
+export const metadata = {
+  title: 'معرفی فروشگاه خدمات کشاورزی غفوری',
+  description: 'خرید اینترنتی انواع ابزار و لوازم کشاورزی با بهترین قیمت از فروشگاه غفوری. ارسال به سراسر ایران با پشتیبانی رایگان.',
+  keywords: ['فروشگاه کشاورزی', 'ابزار کشاورزی', 'خرید لوازم باغبانی', 'غفوری'],
+  openGraph: {
+    title: 'فروشگاه کشاورزی غفوری',
+    description: 'بهترین فروشگاه اینترنتی برای خرید لوازم کشاورزی و باغبانی در ایران',
+    url: 'https://agrm.ir',
+    siteName: 'فروشگاه غفوری',
+    locale: 'fa_IR',
+    type: 'website',
+  },
+};
 
 function page() {
 
   return (
     <div dir="rtl" className="mt-10 ">
-      <h2 className="font-bold text-green-600 text-2xl text-right "></h2>
       <div className="mr-4 ml-4 lg:ml-10 lg:mr-10 md:mr-5 md:ml-5  ">
         <div className="bg-white p-2 md:p-6 flex flex-col items-start justify-center gap-3 border rounded-b-lg mt-6  rounded-2xl  ">
         <div className="flex gap-2">
