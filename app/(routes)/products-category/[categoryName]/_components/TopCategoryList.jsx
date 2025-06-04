@@ -65,7 +65,7 @@ function TopCategoryList({ categoryList, selectedCategory }) {
                   ? `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${category.image[0].url}`
                   : "/placeholder.png"
               }
-              alt={category?.namfa || "Category"}
+              alt=""
               width={50}
               height={50}
               className="group-hover:scale-125 transition-all ease-in-out"
