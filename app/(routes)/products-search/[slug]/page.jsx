@@ -1,9 +1,21 @@
 import ProductSearchPage from './_components/Product';
 import GlobalApi from '@/app/_utils/GlobalApi';
 
-export async function generateMetadata({ params = {} }) {
+export async function generateMetadata(props) {
+  const { params } = await props; 
   const slug = decodeURIComponent(params?.slug || "");
   const product = await GlobalApi.getProductBySlug(slug).then((res) => res?.[0] || null);
+
+  if (!product) {
+    return {
+      title: "محصول یافت نشد",
+      description: "محصول مورد نظر در فروشگاه موجود نیست.",
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
+  }
 
   const title = product?.namefa;
   const description = product?.description
@@ -28,6 +40,9 @@ export async function generateMetadata({ params = {} }) {
   };
 }
 
-export default function Page() {
-  return <ProductSearchPage />;
+
+export default async function Page(props) {
+  const params = await props.params; 
+  const slug = decodeURIComponent(params?.slug || "");
+  return <ProductSearchPage slug={slug} />;
 }

@@ -208,10 +208,13 @@ function ProductSearchPage() {
                   </h2>
                 </Link>
               ))}
+              {categoryList.length % 2 !== 0 ? (<div  className="hidden md:block flex-col items-center bg-green-200 gap-2 p-3 rounded-lg group cursor-pointer hover:bg-green-400" />) : null}
+
             </div>
           </div>
         </div>
       </div>
+      <h2 className='font-bold text-green-600  flex justify-center b text-2xl text-right mt-10 '> دیگر محصولات</h2>
       <div>
         <ProductList productList={productList} />
       </div>

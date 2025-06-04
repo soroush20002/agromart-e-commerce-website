@@ -1,9 +1,9 @@
 # *
 User-agent: *
+Allow: /
 Disallow: /checkout
 Disallow: /my-order
 Disallow: /order-confirmation
-Allow: /
 
 # Host
 Host: https://agrm.ir

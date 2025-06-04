@@ -14,8 +14,17 @@ module.exports = {
         disallow: ['/checkout', '/my-order', '/order-confirmation'],
       },
     ],
-    additionalSitemaps: [
-      'https://agrm.ir/sitemap-0.xml',
-    ],
+  },
+  additionalPaths: async (config) => {
+    const res = await fetch('https://agri.liara.run/api/products?pagination[pageSize]=1000');
+    const products = await res.json();
+
+    return products.data.map((product) => ({
+      loc: `/products-search/${encodeURIComponent(product.slug)}`,
+      changefreq: 'daily',
+      priority: 0.8,
+      lastmod: product.updatedAt,
+    }));
   },
 };
+
