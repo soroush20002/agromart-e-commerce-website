@@ -137,6 +137,7 @@ const getCartItems = (ui, jwt) =>
         id: item.id,
         documentId: item.documentId,
         product: item.products[0]?.documentId,
+        weight: item.weight
       }));
 
       console.log("Cart", cartItemsList);

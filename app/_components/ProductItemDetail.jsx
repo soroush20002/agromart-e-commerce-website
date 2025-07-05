@@ -21,6 +21,7 @@ function ProductItemDetail({ product }) {
   const { updateCart, setUpdateCart } = useContext(UpdateCartContext);
 
   const addToCart = () => {
+    console.log(product.weight)
     setLoading(true);
 
     if (!jwt) {
@@ -38,6 +39,7 @@ function ProductItemDetail({ product }) {
         users_permissions_users: user.id,
         name: product.namefa,
         ui: user.id,
+        weight: product.weight
       },
     };
     console.log("Product ID:", product?.id);
