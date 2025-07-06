@@ -30,26 +30,28 @@ const TELEGRAM_CHAT_ID = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID;
 
 export const sendTelegramMessage = async (message) => {
   try {
-    const response = await fetch('https://agrishop-1vpe.vercel.app/api/telegram', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ message }),
-    });
+    const response = await fetch(
+      "https://agrishop-1vpe.vercel.app/api/telegram",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message }),
+      }
+    );
 
     const data = await response.json();
 
     if (data.success) {
-      console.log('MS', data);
+      console.log("MS", data);
     } else {
-      console.error('MF', data);
+      console.error("MF", data);
     }
   } catch (error) {
-    console.error('MF', error);
+    console.error("MF", error);
   }
 };
-
 
 export async function createZarinpalRequest(body) {
   const { data } = await axios.post(
@@ -137,7 +139,7 @@ const getCartItems = (ui, jwt) =>
         id: item.id,
         documentId: item.documentId,
         product: item.products[0]?.documentId,
-        weight: item.weight
+        weight: item.weight,
       }));
 
       console.log("Cart", cartItemsList);
@@ -191,6 +193,37 @@ const getMyOrders = (userId, jwt) =>
       return orderList;
     });
 
+const getOrderDocbyauthority = (authority, jwt) =>
+  axiosClient
+    .get(`/orders?filters[authority][$eq]=${authority}`, {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    })
+    .then((resp) => {
+      const responce = resp.data.data;
+      const doc = responce.map((item) => ({
+        documentId: item.documentId,
+      }));
+
+      return doc;
+    });
+
+const putPaymentId = (documentId, paymentId, jwt) =>
+  axiosClient.put(
+    `/orders/${documentId}`,
+    {
+      data: {
+        paymentId: paymentId,
+      },
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    }
+  );
+
 const getProductBySlug = (slug) =>
   axiosClient
     .get(`/products?filters[slug][$eq]=${slug}&populate=*`)
@@ -216,5 +249,7 @@ export default {
   verifyZarinpalPayment,
   createOrder,
   getMyOrders,
-  getProductBySlug
+  getProductBySlug,
+  getOrderDocbyauthority,
+  putPaymentId,
 };

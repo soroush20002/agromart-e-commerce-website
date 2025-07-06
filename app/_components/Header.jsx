@@ -101,7 +101,7 @@ const Header = () => {
     setSearchText(value);
 
     if (value.trim().length > 1) {
-      const res = await fetch("https://agri.liara.run/api/products");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/products`);
       const data = await res.json();
       const allProducts = data?.data || [];
 

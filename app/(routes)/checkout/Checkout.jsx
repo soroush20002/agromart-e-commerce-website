@@ -15,6 +15,7 @@ import UpdateCartContext from "@/app/_context/UpdateCartContext";
 import { toast } from "sonner";
 import PaymentRedirectGuard from "@/app/_components/PaymentRedirectGuard";
 import { ConfigProvider, Radio, Select } from "antd";
+import axios from "axios";
 
 function Checkout() {
   const pathname = usePathname();
@@ -44,7 +45,7 @@ function Checkout() {
   const [city, setCity] = useState([]);
   const [tax, setTax] = useState([]);
   const [selectedCityCode, setSelectedCityCode] = useState(null);
-  const [totalWeight, setTotalWeight] = useState(0)
+  const [totalWeight, setTotalWeight] = useState(0);
 
   useEffect(() => {
     const handleCity = async () => {
@@ -160,8 +161,6 @@ function Checkout() {
     }
   }, []);
 
-  
-
   useEffect(() => {
     let total = 0;
     let totalw = 0;
@@ -171,7 +170,7 @@ function Checkout() {
     });
 
     const formattedTotal = parseFloat(total.toFixed(0));
-    setTotalWeight(totalw)
+    setTotalWeight(totalw);
     setSubTotal(formattedTotal);
 
     if (placement === "PP") {
@@ -200,14 +199,11 @@ function Checkout() {
           })
             .then(async (res) => {
               if (res.data.code === 100) {
-                console.log("PPPP:", res.data);
                 sendTelegramMessage(`user ${user?.username} => 100 `);
                 const paymentId = res.data.ref_id;
-
                 const orderInfo = JSON.parse(
                   sessionStorage.getItem("orderInfo")
                 );
-
                 if (orderInfo) {
                   const finalPayload = {
                     data: {
@@ -216,13 +212,16 @@ function Checkout() {
                       paymentId: String(paymentId + " ( در حال پردازش ) "),
                     },
                   };
-
-                  console.log("FP", finalPayload);
                   sendTelegramMessage(`user ${user?.username} => Ordered`);
-
                   try {
-                    const resp = await GlobalApi.createOrder(
-                      finalPayload,
+                    const resp = await GlobalApi.getOrderDocbyauthority(
+                      authority,
+                      jwt
+                    );
+                    const documentId = resp?.[0]?.documentId;
+                    const rsp = await GlobalApi.putPaymentId(
+                      documentId,
+                      String(paymentId + " ( در حال پردازش ) "),
                       jwt
                     ).then((resp) => {
                       cartItemList.forEach((item, index) => {
@@ -234,9 +233,6 @@ function Checkout() {
                       });
                       router.replace("/order-confirmation");
                     });
-
-                    console.log("OC::", resp);
-
                     sessionStorage.removeItem("orderInfo");
                     sessionStorage.removeItem("finalAmount");
                     sessionStorage.removeItem("placement");
@@ -245,7 +241,6 @@ function Checkout() {
                     sessionStorage.removeItem("orderInfo");
                     sessionStorage.removeItem("finalAmount");
                     sessionStorage.removeItem("placement");
-
                     sendTelegramMessage(
                       `user ${user?.username} => ERROR in payment verify`
                     );
@@ -324,10 +319,6 @@ zip: ${payload.data.zip}
 address: ${payload.data.address}
 email: ${payload.data.email}`);
 
-    console.log(
-      "🔍 Sending payload to Strapi:",
-      JSON.stringify(payload, null, 2)
-    ); 
     setLoading2(true);
     try {
       const res = await fetch("/api/zarinpal", {
@@ -339,16 +330,23 @@ email: ${payload.data.email}`);
           description: "توضیحات پرداخت",
         }),
       });
-
       const data = await res.json();
-
+      console.log(data.data.authority);
+      const authority = data.data.authority;
+      const fullPayload = {
+        ...payload,
+        data: {
+          ...payload.data,
+          authority,
+        },
+      };
       if (data.data?.code === 100) {
         sendTelegramMessage(
           `user ${user?.username} => transferd to the payment`
         );
+        const resp = await GlobalApi.createOrder(fullPayload, jwt);
         sessionStorage.setItem("finalAmount", finalAmount.toString());
         sessionStorage.setItem("placement", placement);
-
         window.location.href = `https://www.zarinpal.com/pg/StartPay/${data.data.authority}`;
       } else {
         console.error("PN:", data);
@@ -619,7 +617,13 @@ email: ${payload.data.email}`);
                   disabled={
                     loading3 || placement == "hh"
                       ? !(phone && username && zip)
-                      : !(address && zip && phone && username && selectedCityCode)
+                      : !(
+                          address &&
+                          zip &&
+                          phone &&
+                          username &&
+                          selectedCityCode
+                        )
                   }
                 >
                   {loading2 ? "در حال انتقال..." : "پرداخت"}
