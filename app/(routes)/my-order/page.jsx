@@ -26,15 +26,15 @@ function Page() {
   }, [user, jwt]);
 
   const getMyOrder = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const orderList_ = await GlobalApi.getMyOrders(user.id, jwt);
       console.log(orderList_);
       setOrderList(orderList_);
     } catch (err) {
       console.error("Failed to get orders:", err);
-    }finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -49,7 +49,6 @@ function Page() {
           <h2>تا کنون سفارشی ثبت نکرده اید!</h2>
         </div>
       ) : (
-
         <div className=" mt-10 mx-7 md:mx-20 shadow-xl rounded-[10px] bg-gray-100">
           <ConfigProvider
             direction="rtl"
@@ -64,7 +63,12 @@ function Page() {
               accordion
               items={orderList.map((order) => ({
                 key: order.id,
-                label: `سفارش ${order?.paymentId}`,
+                label: !order?.paymentId
+                ? "در حال بررسی"
+                : order.paymentId === "پرداخت نشده"
+                  ? order.paymentId
+                  : `سفارش ${order.paymentId}`,
+              
                 children: (
                   <div>
                     <p>
@@ -95,7 +99,8 @@ function Page() {
                               <p>{item?.product?.namefa}</p>
                               <p>تعداد: {item?.quantity}</p>
                               <p>
-                                قیمت: {item?.product?.mrp.toLocaleString()} تومان
+                                قیمت: {item?.product?.mrp.toLocaleString()}{" "}
+                                تومان
                               </p>
                             </div>
                           </div>
