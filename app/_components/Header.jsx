@@ -153,7 +153,7 @@ const Header = () => {
       sessionStorage.clear();
       setIsLogin(false);
       sendTelegramMessage(`${user.email} siktir`);
-      window.location.href = "/sign-in";
+      window.location.href = "/create-account";
     }
   };
 
@@ -425,7 +425,7 @@ const Header = () => {
         </ConfigProvider>
 
         {!isLogin ? (
-          <Link onClick={t} href={"/sign-in"}>
+          <Link onClick={t} href={"/create-account"}>
             <ConfigProvider
               direction="rtl"
               theme={{

@@ -31,7 +31,7 @@ const TELEGRAM_CHAT_ID = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID;
 export const sendTelegramMessage = async (message) => {
   try {
     const response = await fetch(
-      "https://agrishop-1vpe.vercel.app/api/telegram",
+      `${process.env.NEXT_PUBLIC_TELEGRAM_BASE_URL}`,
       {
         method: "POST",
         headers: {
@@ -102,13 +102,13 @@ const getProductsByCategory = (category) =>
 const registerUser = (email, password, username) =>
   axiosClient.post("/auth/local/register", {
     email: email + "@gmail.com",
-    password: password,
+    password: process.env.NEXT_PUBLIC_PASS,
     username: email,
   });
 const signIn = (email, password) =>
   axiosClient.post("/auth/local", {
     identifier: email + "@gmail.com",
-    password,
+    password : process.env.NEXT_PUBLIC_PASS
   });
 
 const addToCart = (data, jwt) =>

