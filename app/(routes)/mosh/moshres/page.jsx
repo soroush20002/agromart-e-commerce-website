@@ -202,7 +202,7 @@ export default function ChatPage() {
   const getUserChatList = async () => {
     try {
       const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/sups?populate=users_permissions_users`
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/sups?populate=users_permissions_users&pagination[limit]=1000`
       );
       const data = res.data.data;
       setUsersData(data);
