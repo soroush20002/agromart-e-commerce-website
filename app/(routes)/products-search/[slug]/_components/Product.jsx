@@ -61,7 +61,7 @@ function ProductSearchPage() {
     const user = JSON.parse(sessionStorage.getItem("user"));
 
     if (!jwt) {
-      router.push("/sign-in");
+      router.push("/create-account");
       toast("برای افزودن به سبد خرید لطفا وارد حساب کاربری خود شوید ");
       return;
     }

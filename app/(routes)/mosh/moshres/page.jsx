@@ -9,6 +9,7 @@ import { StarOutlined, UploadOutlined } from "@ant-design/icons";
 import { Button, ConfigProvider, Upload } from "antd";
 import { Trash2Icon } from "lucide-react";
 import Image from "next/image";
+import { BlinkBlur } from "react-loading-indicators";
 
 export default function ChatPage() {
   const [messages, setMessages] = useState([]);
@@ -21,7 +22,12 @@ export default function ChatPage() {
   const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
   const [mediaId, setMediaId] = useState([]);
   const [fileList, setFileList] = useState([]);
+  const [uniqueUserMessages, setUniqueUserMessages] = useState([]);
+  const [selectedUsername, setSelectedUsername] = useState("");
   const chatContainerRef = useRef(null);
+  const [usersData, setUsersData] = useState([]);
+  const [userUi, setUserUi] = useState([]);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -72,17 +78,16 @@ export default function ChatPage() {
       ]);
       try {
         await axios.post(
-          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/sups`,
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/Sup-responses`,
           {
             data: {
-              uText: newMessage,
-              users_permissions_users: user.id,
-              ui: user.id,
+              rText: newMessage,
+              ui: userUi,
               image: mediaId,
             },
           }
         );
-        getUserChat();
+        getUserResponse();
         sendTelegramMessage(`User ${user.id} : ${newMessage}`);
         setNewMessage("");
         setFileList([]);
@@ -113,7 +118,7 @@ export default function ChatPage() {
     try {
       const storedUser = JSON.parse(sessionStorage.getItem("user"));
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/sups?filters[ui][$eq]=${storedUser.id}&pagination[limit]=1000&populate=image`
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/sups?filters[ui][$eq]=${userUi}&pagination[limit]=1000&populate=image`
       );
       setUserChat(response.data);
     } catch (error) {
@@ -125,26 +130,31 @@ export default function ChatPage() {
   };
 
   const getUserResponse = async () => {
+    setLoading(true);
     try {
       const storedUser = JSON.parse(sessionStorage.getItem("user"));
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/Sup-responses?filters[ui][$eq]=${storedUser.id}&pagination[limit]=1000&populate=*`
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/Sup-responses?filters[ui][$eq]=${userUi}&pagination[limit]=1000&populate=*`
       );
       setUserResponse(response.data);
+      setLoading(false);
     } catch (error) {
       const storedUser = sessionStorage.getItem("user");
       if (storedUser) {
         toast("مشکلی پیش آمده!");
       }
+      setLoading(false);
     }
   };
   useEffect(() => {
+    if (!userUi) return;
+
     const interval = setInterval(() => {
       getUserResponse();
-    }, 5000);
+    }, 60000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [userUi]);
 
   const uploadProps = {
     name: "files",
@@ -189,13 +199,65 @@ export default function ChatPage() {
     },
   };
 
+  const getUserChatList = async () => {
+    try {
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/sups?populate=users_permissions_users`
+      );
+      const data = res.data.data;
+      setUsersData(data);
+      const uniqueUsernames = Array.from(
+        new Set(
+          data
+            .map((item) => item.users_permissions_users?.[0]?.username)
+            .filter(Boolean)
+        )
+      );
+      setUniqueUserMessages(uniqueUsernames);
+      return uniqueUsernames;
+    } catch (error) {
+      toast("مشکلی پیش امده ❗");
+      return [];
+    }
+  };
+
+  useEffect(() => {
+    getUserChatList();
+  }, []);
+
+  useEffect(() => {
+    if (!selectedUsername) return;
+    const userMatch = usersData.find(
+      (item) => item.users_permissions_users?.[0]?.username === selectedUsername
+    );
+    if (userMatch) {
+      const matchedUi = userMatch.ui;
+      setUserUi(matchedUi);
+      console.log(matchedUi);
+    } else {
+      toast("مشکلی پیش امده ❗");
+    }
+  }, [selectedUsername]);
+
+  useEffect(() => {
+    if (userUi) {
+      getUserChat();
+      getUserResponse();
+    }
+  }, [userUi]);
+
+  const Update = () =>{
+    getUserChat();
+    getUserResponse();
+  }
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 px-2 py-8 md:pb-0  md:translate-y-[0px] lg:translate-y-[-15px] translate-y-[-30px] ">
       <div className="lg:order-2 lg:w-full">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          <div className="bg-green-600 p-4">
+          <div onClick={Update} className="bg-green-600 p-4">
             <h1 className="text-white text-lg md:text-xl font-semibold text-center">
-              مشاوره رایگان{" "}
+               {selectedUsername}
             </h1>
           </div>
 
@@ -211,14 +273,14 @@ export default function ChatPage() {
                 <div
                   key={`${message.id}-${index}`}
                   className={`flex ${
-                    message.rText ? "justify-end" : "justify-start"
+                    message.rText ? "justify-start" : "justify-end"
                   }`}
                 >
                   <div
                     className={`max-w-[85%] md:max-w-[70%] rounded-lg p-3 text-sm md:text-base ${
                       message.rText
-                        ? "bg-gray-200 text-gray-800"
-                        : "bg-green-500 text-white"
+                        ? "bg-green-500 text-white"
+                        : "bg-gray-200 text-gray-800"
                     }`}
                   >
                     {message.rText || message.uText}
@@ -237,6 +299,7 @@ export default function ChatPage() {
                             alt={`image-${idx}`}
                             className="max-w-[100px] max-h-[100px] object-cover rounded-md"
                           />
+                          
                         ))}
                       </div>
                     )}
@@ -309,41 +372,24 @@ export default function ChatPage() {
         </div>
       </div>
       <div
-        dir="rtl"
+        dir="ltr"
         className="lg:order-1 lg:w-full bg-white rounded-lg shadow-lg p-6"
       >
-        <div className="flex items-center gap-2 mb-4">
-          <img src="/customer-service.png" alt="مشاوره" className="w-5 h-5" />
-          <h2 className="font-semibold">مشاوره رایگان کشاورزی آنلاین</h2>
-        </div>
-        <p className="mb-4 text-gray-700 leading-relaxed">
-          گاهی ممکن است به متخصصین امور کشاورزی دسترسی نداشته باشید و یا مثلاً
-          سوال یا مشکل شما نیاز به پاسخ سریع به سوالات کشاورزی داشته باشد. در
-          این شرایط نیاز به پرسش و پاسخ آنلاین کشاورزی دارید. پرسش و پاسخ آنلاین
-          کشاورزی می‌تواند مشاوره آنلاین باغبانی، مشاوره کشاورزی رایگان، مشاوره
-          تخصصی کشاورزی و ... را در بر بگیرد.
-        </p>
-        <p className="mb-6 text-gray-700 leading-relaxed">
-          سامانه مشاوره آنلاین کشاورزی غفوری، با هدف پشتیبانی تخصصی در زمینه‌های
-          مختلف کشاورزی از جمله انتخاب بذر، روش‌های کاشت، مدیریت آبیاری، تغذیه
-          گیاهی و کنترل آفات راه‌اندازی شده است. کاربران می‌توانند سوالات خود را
-          در هر زمینه‌ای ثبت کرده و از تجربه کارشناسان بهره‌مند شوند.
-        </p>
-        <div className="flex items-center gap-2 mb-4">
-          <img
-            src="/customer-service.png"
-            alt="زمان پاسخ‌گویی"
-            className="w-5 h-5"
-          />
-          <h2 className="font-semibold">مدت زمان پاسخ‌گویی</h2>
-        </div>
-        <p className="text-gray-700 leading-relaxed">
-          پس از ثبت پیام، درخواست‌ها توسط تیم مشاوره بررسی شده و پاسخ اولیه
-          معمولاً بین ۱۰ دقیقه تا حداکثر ۱ ساعت ارسال می‌شود. این زمان بسته به
-          تعداد پیام‌های دریافتی متغیر است، اما کلیه پرسش‌ها با دقت و در
-          سریع‌ترین زمان ممکن پیگیری خواهند شد.
-        </p>
+        {uniqueUserMessages.map((entry, index) => (
+          <div
+            key={index}
+            onClick={() => setSelectedUsername(entry)}
+            className="p-2 shadow-xl flex flex-row gap-2 cursor-pointer mb-1 transition-colors duration-200 ease-in-out bg-green-100 hover:bg-green-900 rounded-2xl border-b"
+          >
+            <Image width={25} height={25} src="/user.png" alt="" /> {entry} <span className="text-gray-600"  ></span>
+          </div>
+        ))}
       </div>
+      {loading ? (
+        <div className="  flex-col font-extrabold fixed inset-0 flex items-center justify-center bg-black/60 scale-100 backdrop-blur-md z-50">
+          <BlinkBlur color="#32cd32" text="" textColor="" />
+        </div>
+      ) : null}
     </div>
   );
 }

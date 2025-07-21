@@ -25,7 +25,7 @@ function ProductItemDetail({ product }) {
     setLoading(true);
 
     if (!jwt) {
-      router.push("/sign-in");
+      router.push("/create-account");
       setLoading(false);
       toast('برای ادامه خرید ابتدا وارد حساب کاربری خود شوید')
       return;

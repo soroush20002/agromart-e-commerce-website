@@ -404,7 +404,7 @@ const Header = () => {
                 <Button
                   disabled={!cartItemListl}
                   onClick={() => {
-                    router.push(jwt ? "/checkout" : "sign-in");
+                    router.push(jwt ? "/checkout" : "create-account");
                     setOpen(false);
                     sendTelegramMessage(`user ${user?.username} => checkout `);
                   }}
