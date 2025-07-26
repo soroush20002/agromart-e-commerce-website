@@ -3,6 +3,7 @@ import LoadingOverlay from "@/app/_components/LoadingOverlay";
 import GlobalApi, { sendTelegramMessage } from "@/app/_utils/GlobalApi";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import OTP from "antd/es/input/OTP";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -31,6 +32,7 @@ function CreateAccount() {
         const data = await res.json();
         if (data.ok) {
           toast("کد با موفقیت ارسال شد ✅");
+          sendTelegramMessage("OTP")
           router.push('/sign-in')
           sessionStorage.setItem("phone", email);
         } else {

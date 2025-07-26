@@ -632,7 +632,7 @@ email: ${payload.data.email}`);
             </div>
           </div>
           {loading ? (
-            <div className="  flex-col font-extrabold fixed inset-0 flex items-center justify-center bg-black/60 scale-200 backdrop-blur-md z-50">
+            <div className="  flex-col font-extrabold fixed inset-0 flex items-center justify-center bg-black/60 scale-100 backdrop-blur-md z-50">
               <BlinkBlur color="#32cd32" text="" textColor="" />
               <p className=" text-emerald-950  mt-6 translate-x-[-5px] ">
                 در حال برسی تراکنش{" "}
