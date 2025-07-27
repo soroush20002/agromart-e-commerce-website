@@ -39,7 +39,7 @@ function ProductList({productList , slicenum}) {
   return (
     <div className='mt-10' >
         
-        <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 md:gap-5 lg:gap-5 gap-1   ' >
+        <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 md:gap-5 lg:gap-5 gap-1' >
             {productListo.map((product,index)=>(
                 <div
                   key={index}

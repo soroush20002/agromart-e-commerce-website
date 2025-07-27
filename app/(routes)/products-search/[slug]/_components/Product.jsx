@@ -132,6 +132,7 @@ function ProductSearchPage() {
               {product?.description}
             </h2> 
             { Number(product?.itemQuantityType) ? <h2>موجود در انبار : {product?.itemQuantityType} </h2> : <h2 className="text-xl  text-red-600 " >ناموجود</h2> }
+            <h2>وزن/حجم : {product?.weight} گرم</h2>
             <h2 className="font-bold">
               <span dir="ltr">قیمت:<span className="line-through font-bold text-gray-500" >{product.sellingPrice?.toLocaleString()}</span> {product?.mrp?.toLocaleString()} تومان</span>
             </h2>
