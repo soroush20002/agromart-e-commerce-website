@@ -7,6 +7,7 @@ import Link from "next/link";
 import Fuse from "fuse.js";
 import { useRef } from "react";
 import { sendTelegramMessage } from "../_utils/GlobalApi";
+import { toast } from "sonner";
 
 function Header2() {
   const searchBoxRef = useRef(null);
@@ -97,6 +98,11 @@ function Header2() {
   };
 
   const M = () => {
+    if (jwt) {
+      pass;
+    } else {
+      toast("ابتدا وارد حساب کاربری خود شوید");
+    }
     sendTelegramMessage(`user (${user?.username})  => Mosh `);
   };
 
@@ -119,7 +125,7 @@ function Header2() {
           { label: "صفحه اصلی", href: "/" },
           { label: "پشتیبانی", href: "/support" },
           { label: "درباره ما", href: "/about-us" },
-          { label: "مشاوره رایگان", href: "/mosh" },
+          { label: "مشاوره رایگان", href: jwt ? "/mosh" : "/create-account" },
         ].map((item, index) => (
           <Link
             key={index}

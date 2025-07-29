@@ -61,7 +61,9 @@ const Header = () => {
       ? "Mobile"
       : "Desktop";
     const screenResolution = `${window.screen.width}x${window.screen.height}`;
-    sendTelegramMessage(`User (agrm): ${deviceType}, Resolution: ${screenResolution}`);
+    sendTelegramMessage(
+      `User (agrm): ${deviceType}, Resolution: ${screenResolution}`
+    );
   }, []);
 
   useEffect(() => {
@@ -101,7 +103,9 @@ const Header = () => {
     setSearchText(value);
 
     if (value.trim().length > 1) {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/products`);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/products`
+      );
       const data = await res.json();
       const allProducts = data?.data || [];
 
@@ -235,6 +239,12 @@ const Header = () => {
   };
 
   const M = () => {
+    if (jwt) {
+      router.push("/mosh");
+    } else {
+      toast("ابتدا وارد حساب کاربری خود شوید");
+      router.push("/create-account");
+    }
     sendTelegramMessage(`user (${user?.username})  => Mosh `);
   };
 
@@ -292,22 +302,21 @@ const Header = () => {
                 </Button>
               </ConfigProvider>
             </Link>
-            <Link onClick={M} href={"/mosh"}>
-              <ConfigProvider
-                direction="rtl"
-                theme={{
-                  token: {
-                    fontFamily: "Vazirmatn, sans-serif",
-                    colorPrimary: "#3f6600",
-                  },
-                }}
-              >
-                {" "}
-                <Button color="lime-10" variant="solid" size="larg">
-                  مشاوره رایگان
-                </Button>
-              </ConfigProvider>
-            </Link>
+
+            <ConfigProvider
+              direction="rtl"
+              theme={{
+                token: {
+                  fontFamily: "Vazirmatn, sans-serif",
+                  colorPrimary: "#3f6600",
+                },
+              }}
+            >
+              {" "}
+              <Button color="lime-10" variant="solid" size="larg" onClick={M}>
+                مشاوره رایگان
+              </Button>
+            </ConfigProvider>
           </div>
           <div dir="rtl" className="felx flex gap-2 translate-x-[-17px]">
             <Search />
