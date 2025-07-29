@@ -4,6 +4,7 @@ import Slider from "./_components/Slider";
 import GlobalApi from "./_utils/GlobalApi";
 import Footer from "./_components/Footer";
 import Why from "./_components/Why";
+import ForThisSession from "./_components/ForThisSession"
 export const revalidate = 60;
 
 export const metadata = {
@@ -23,7 +24,8 @@ export const metadata = {
 export default async function Home() {
   const sliderList=await GlobalApi.getSliders();
   const categoryList=await GlobalApi.getCategoryList();
-  const productList=await GlobalApi.getAllProducts();
+  const productList=await GlobalApi.getvitrin();
+  const sproductList=await GlobalApi.getForThisSession();
 
 
   return (
@@ -34,6 +36,8 @@ export default async function Home() {
           <CategoryList categoryList={categoryList} />
           <h2 className='font-bold text-green-600  flex justify-center b text-2xl text-right mt-10 '> برخی از محصولات </h2>
           <ProductList productList={productList} slicenum={10} />
+          {sproductList.length > 0 ? (<h2 className='font-bold text-green-600  flex justify-center b text-2xl text-right mt-10 '> برای این فصل </h2>) : (null)}
+          <ForThisSession productList={sproductList} slicenum={10} />
           <h2 className='font-bold text-green-600  flex justify-center b text-2xl text-right mt-10 '> چرا ما؟ </h2>
           <Why/>
         </div>

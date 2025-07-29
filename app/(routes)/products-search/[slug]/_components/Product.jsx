@@ -118,12 +118,12 @@ function ProductSearchPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="bg-white lg:col-span-8 p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-5 border rounded-2xl">
           <div className="flex justify-center items-center">
-            <img
+            <Image
               src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${product?.images?.[0]?.url}`}
               alt=""
               width="500"
               height="200"
-              className="h-full w-[340px] object-contain border rounded-2xl"
+              className="h-130 w-[340px] object-contain border rounded-2xl"
             />
           </div>
           <div dir="rtl" className="flex flex-col justify-between  gap-3 h-full">
@@ -132,7 +132,6 @@ function ProductSearchPage() {
               {product?.description}
             </h2> 
             { Number(product?.itemQuantityType) ? <h2>موجود در انبار : {product?.itemQuantityType} </h2> : <h2 className="text-xl  text-red-600 " >ناموجود</h2> }
-            <h2>وزن/حجم : {product?.weight} گرم</h2>
             <h2 className="font-bold">
               <span dir="ltr">قیمت:<span className="line-through font-bold text-gray-500" >{product.sellingPrice?.toLocaleString()}</span> {product?.mrp?.toLocaleString()} تومان</span>
             </h2>
@@ -215,7 +214,7 @@ function ProductSearchPage() {
           </div>
         </div>
       </div>
-      <h2 className='font-bold text-green-600  flex justify-center b text-2xl text-right mt-10 '> دیگر محصولات</h2>
+      {/* <h2 className='font-bold text-green-600  flex justify-center b text-2xl text-right mt-10 '> دیگر محصولات</h2> */}
       <div>
         <ProductList productList={productList} />
       </div>

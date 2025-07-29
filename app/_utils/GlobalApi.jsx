@@ -3,31 +3,6 @@ const { default: axios } = require("axios");
 const TELEGRAM_BOT_TOKEN = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID;
 
-// export const sendTelegramMessage = async (message) => {
-//   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
-//     console.error('TOKEN!');
-//     return;
-//   }
-
-//   const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-//   const text = `${message}`;
-
-//   try {
-//     const response = await axios.post(url, {
-//       chat_id: TELEGRAM_CHAT_ID,
-//       text,
-//     });
-
-//     if (response.data.ok) {
-//       console.log('MS',response.data);
-//     } else {
-//       console.error('MS!');
-//     }
-//   } catch (error) {
-//     console.error('ERROR', error);
-//   }
-// };
-
 export const sendTelegramMessage = async (message) => {
   try {
     const response = await fetch(
@@ -55,7 +30,7 @@ export const sendTelegramMessage = async (message) => {
 
 export async function createZarinpalRequest(body) {
   const { data } = await axios.post(
-    "https://api.zarinpal.com/pg/v4/payment/request.json",
+    `${process.env.NEXT_PUBLIC_ZRINPAL_URL}/pg/v4/payment/request.json`,
     body,
     {
       headers: {
@@ -93,7 +68,7 @@ const getProductsByCategory = (category) =>
     .get(
       `/products?filters[categories][name][$in]=${encodeURIComponent(
         category
-      )}&populate=*`
+      )}&populate=*&pagination[limit]=200`
     )
     .then((resp) => {
       console.log("resp:", resp.data.data);
@@ -108,7 +83,7 @@ const registerUser = (email, password, username) =>
 const signIn = (email, password) =>
   axiosClient.post("/auth/local", {
     identifier: email + "@gmail.com",
-    password : process.env.NEXT_PUBLIC_PASS
+    password: process.env.NEXT_PUBLIC_PASS,
   });
 
 const addToCart = (data, jwt) =>
@@ -139,7 +114,7 @@ const getCartItems = (ui, jwt) =>
         id: item.id,
         documentId: item.documentId,
         product: item.products[0]?.documentId,
-        weight: item.weight,
+        weight: item.products[0]?.weight,
       }));
 
       console.log("Cart", cartItemsList);
@@ -234,6 +209,20 @@ const getProductBySlug = (slug) =>
       }));
     });
 
+const getForThisSession = async () => {
+  const resp = await axiosClient.get(
+    `/products?filters[forThisSession]=true&populate=*`
+  );
+  return resp.data.data;
+};
+
+const getvitrin = async () => {
+  const resp = await axiosClient.get(
+    `/products?filters[vitrin]=true&populate=*`
+  );
+  return resp.data.data;
+};
+
 export default {
   getCategory,
   getSliders,
@@ -252,4 +241,6 @@ export default {
   getProductBySlug,
   getOrderDocbyauthority,
   putPaymentId,
+  getForThisSession,
+  getvitrin,
 };

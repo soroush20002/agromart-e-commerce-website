@@ -46,13 +46,14 @@ function Checkout() {
   const [tax, setTax] = useState([]);
   const [selectedCityCode, setSelectedCityCode] = useState(null);
   const [totalWeight, setTotalWeight] = useState(0);
+  const [error, setError] = useState(true)
 
   useEffect(() => {
     const handleCity = async () => {
       setLoading4(true);
       try {
         const res = await fetch(
-          `https://sadrcod.com:5001/api/city/query?page=1&pageSize=100&paginated=true&provinceId=${province}`,
+          `${process.env.NEXT_PUBLIC_POST_URL}/api/city/query?page=1&pageSize=100&paginated=true&provinceId=${province}`,
           {
             headers: {
               "X-ATJ-Auth-Token": "be53aeb9-7883-4603-a867-61c24eb252de",
@@ -61,15 +62,13 @@ function Checkout() {
             },
           }
         );
-
         if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
+          toast("مشکلی پیش امده لطفا چند دقیقه دیگر تلاش کنید ❗");
         }
-
         const cityCode = await res.json();
         setCity(cityCode.data);
       } catch (error) {
-        console.error("Error in CityCode", error);
+        toast("مشکلی پیش امده لطفا چند دقیقه دیگر تلاش کنید ❗");
       } finally {
         setLoading4(false);
       }
@@ -85,17 +84,20 @@ function Checkout() {
       setLoading4(true);
       try {
         const res = await fetch(
-          `https://sadrcod.com:5001/api/package/GetPriceSadraIR?CityCode=${selectedCityCode}&StateCode=${province}&Weight=${totalWeight}&Price=${subTotal}&InCash=1`
+          `${process.env.NEXT_PUBLIC_POST_URL}/api/package/GetPriceSadraIR?CityCode=${selectedCityCode}&StateCode=${province}&Weight=${totalWeight}&Price=${subTotal}&InCash=1`
         );
-
         if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
+          throw new Error(`error! status: ${res.status}`);
         }
-
         const taxPrice = await res.json();
+        if (taxPrice.successful == false){
+          toast("مشکلی پیش امده ❗")
+        }else{
+          setError(false)
+        }
         setTax(taxPrice);
       } catch (err) {
-        console.error("Error in tax", err);
+        toast("مشکلی پیش امده لطفا چند دقیقه دیگر تلاش کنید ❗");
       } finally {
         setLoading4(false);
       }
@@ -132,11 +134,10 @@ function Checkout() {
       setLoading3(true);
       try {
         const CartItemsList_ = await GlobalApi.getCartItems(user.id, jwt);
-        console.log("CRT3", CartItemsList_);
         setTotalCartItem(CartItemsList_ ? CartItemsList_.length : 0);
         setCartItemList(CartItemsList_);
       } catch (err) {
-        console.error("F:", err);
+        toast("مشکلی پیش امده لطفا چند دقیقه دیگر تلاش کنید ❗");
       } finally {
         setLoading3(false);
         setones(false);
@@ -470,7 +471,13 @@ email: ${payload.data.email}`);
                     hidden={placement == "hh"}
                     showSearch
                     placeholder="شهر"
-                    notFoundContent="ابتدا استان خود را انتخاب کنید"
+                    notFoundContent={
+                      loading4 ? (
+                        "در حال بارگزاری ..."
+                      ) : (
+                        "ابتدا استان خود را انتخاب کنید"
+                      )
+                    }
                     filterOption={(input, option) =>
                       (option?.label ?? "")
                         .toLowerCase()
@@ -618,11 +625,13 @@ email: ${payload.data.email}`);
                     loading3 || placement == "hh"
                       ? !(phone && username && zip)
                       : !(
+
                           address &&
                           zip &&
                           phone &&
                           username &&
-                          selectedCityCode
+                          selectedCityCode &&
+                          !error
                         )
                   }
                 >
