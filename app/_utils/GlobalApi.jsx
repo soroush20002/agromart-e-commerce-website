@@ -1,3 +1,5 @@
+import { setupCache } from "axios-cache-interceptor";
+
 const { default: axios } = require("axios");
 
 const TELEGRAM_BOT_TOKEN = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
@@ -50,29 +52,39 @@ const axiosClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_BASE_URL + "/api",
 });
 
+const cachedAxios = setupCache(axios.create({
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_BASE_URL + "/api",
+}), {
+  ttl: 5 * 60 * 1000,
+  debug: console.log,
+});
+
 const getCategory = () => axiosClient.get("/categories?populate=*");
 const getSliders = () =>
-  axiosClient.get("/sliders?populate=*").then((resp) => {
+  cachedAxios.get("/sliders?populate=*").then((resp) => {
     return resp.data.data;
   });
 const getCategoryList = () =>
-  axiosClient.get("/categories?populate=*").then((resp) => {
+  cachedAxios.get("/categories?populate=*").then((resp) => {
     return resp.data.data;
   });
 const getAllProducts = () =>
-  axiosClient.get("/products?populate=*").then((resp) => {
+  cachedAxios.get("/products?populate=*").then((resp) => {
     return resp.data.data;
   });
-const getProductsByCategory = (category) =>
-  axiosClient
+export const getProductsByCategory = (category) =>
+  cachedAxios
     .get(
       `/products?filters[categories][name][$in]=${encodeURIComponent(
         category
       )}&populate=*&pagination[limit]=200`
     )
-    .then((resp) => {
-      console.log("resp:", resp.data.data);
-      return resp.data.data;
+    .then((res) => {
+      console.log({
+        data: res.data.data,
+        cached: res.cached,
+      });
+      return res.data.data;
     });
 const registerUser = (email, password, username) =>
   axiosClient.post("/auth/local/register", {
@@ -200,7 +212,7 @@ const putPaymentId = (documentId, paymentId, jwt) =>
   );
 
 const getProductBySlug = (slug) =>
-  axiosClient
+  cachedAxios
     .get(`/products?filters[slug][$eq]=${slug}&populate=*`)
     .then((resp) => {
       return resp.data.data.map((item) => ({
@@ -210,14 +222,14 @@ const getProductBySlug = (slug) =>
     });
 
 const getForThisSession = async () => {
-  const resp = await axiosClient.get(
+  const resp = await cachedAxios.get(
     `/products?filters[forThisSession]=true&populate=*`
   );
   return resp.data.data;
 };
 
 const getvitrin = async () => {
-  const resp = await axiosClient.get(
+  const resp = await cachedAxios.get(
     `/products?filters[vitrin]=true&populate=*`
   );
   return resp.data.data;

@@ -251,7 +251,7 @@ const Header = () => {
   return (
     <div className="p-5 shadow-sm flex justify-between bg-white ">
       <div className="flex items-center gap-8">
-        <Image src="/logo.png" alt="" width={200} height={150} />
+        <Image src="/logo.png" alt="" width={200} height={50} />
         <div className="hidden md:flex gap-3 items-center border rounded-full p-2 px-0 relative">
           <div className="hidden lg:block translate-x-2.5 ">
             <Link onClick={H} href={"/"}>
