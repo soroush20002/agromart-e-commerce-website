@@ -301,7 +301,7 @@ function Checkout() {
 
     const payload = {
       data: {
-        totalOrderAmount: subTotal,
+        totalOrderAmount: finalAmount,
         username: username,
         email: email,
         phone: phone,
@@ -327,8 +327,13 @@ email: ${payload.data.email}`);
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           amount: finalAmount,
+          subTotal: subTotal,
+          province: province,
+          selectedCityCode: selectedCityCode,
+          userID: user.id,
+          jwt: jwt,
           callback_url: "https://agrm.ir/checkout",
-          description: "توضیحات پرداخت",
+          description: "A",
         }),
       });
       const data = await res.json();
@@ -351,9 +356,11 @@ email: ${payload.data.email}`);
         window.location.href = `https://www.zarinpal.com/pg/StartPay/${data.data.authority}`;
       } else {
         console.error("PN:", data);
+        toast("خطا در پردازش اطلاعات ❗")
         sendTelegramMessage(`user ${user?.username} => ERROR in transfer`);
       }
     } catch (error) {
+      toast("خطا در پردازش اطلاعات ❗")
       console.error("PN:", error);
       sendTelegramMessage(`user ${user?.username} => ERROR in transfer`);
     } finally {

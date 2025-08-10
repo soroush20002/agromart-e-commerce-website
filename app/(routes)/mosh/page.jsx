@@ -138,13 +138,18 @@ export default function ChatPage() {
       }
     }
   };
-  useEffect(() => {
-    const interval = setInterval(() => {
-      getUserResponse();
-    }, 5000);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     getUserResponse();
+  //   }, 1000);
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
+  useEffect(()=>{
+    getUserResponse()
+  },[])
+
+  
 
   const uploadProps = {
     name: "files",

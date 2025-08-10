@@ -104,7 +104,7 @@ const Header = () => {
 
     if (value.trim().length > 1) {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/products`
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/products?pagination[limit]=200` 
       );
       const data = await res.json();
       const allProducts = data?.data || [];

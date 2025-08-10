@@ -1,14 +1,40 @@
-// app/api/zarinpal/route.js
-
-import { createZarinpalRequest } from "@/app/_utils/GlobalApi";
+import GlobalApi, { createZarinpalRequest } from "@/app/_utils/GlobalApi";
  
 export async function POST(req) {
   try {
     const body = await req.json();
 
+    const CartItems = await GlobalApi.getCartItems(body.userID, body.jwt)
+    let total = 0;
+    let totalw = 0;
+    
+    CartItems.forEach((element) => {
+      total += Number(element.amount);
+      totalw += Number(element.weight);
+    });
+
+    const res = await fetch(`${process.env.NEXT_PUBLIC_POST_URL}/api/package/GetPriceSadraIR?CityCode=${body.selectedCityCode}&StateCode=${body.province}&Weight=${totalw}&Price=${body.subTotal}&InCash=1`)
+    const tax = await res.json()
+
+    const finallamount = (total * 10) + tax.deliveryCost
+
+    if (body.amount == finallamount) {
+
+    } else {
+      return new Response(
+        JSON.stringify({ status: 51, message: "Validation Error" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
     const result = await createZarinpalRequest({
       merchant_id: process.env.ZARINPAL_MERCHANT_ID,
-      ...body,
+      amount:body.amount,
+      callback_url:body.callback_url,
+      description:body.description
     });
 
     return new Response(JSON.stringify(result), {
@@ -16,7 +42,7 @@ export async function POST(req) {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('API?ROUTE ERROR', error);
+    console.error('APIROUTE ERROR', error);
     return new Response(JSON.stringify({ error: 'API?ROUTE ERROR' }), {
       status: 500,
     });

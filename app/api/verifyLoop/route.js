@@ -5,7 +5,7 @@ export async function GET() {
       method: "GET",
       headers: {
         Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjQsImlhdCI6MTc1MTY0Nzk1MCwiZXhwIjoxNzU0MjM5OTUwfQ.-KMMm4GnCQo3PwoMCwk_fK91MoSthGagqfTfre0XyYw",
+          `Bearer ${process.env.VERIFYTOKEN}`,
       },
     }
   );
@@ -28,13 +28,14 @@ export async function GET() {
           },
           body: JSON.stringify({
             merchant_id: process.env.ZARINPAL_MERCHANT_ID,
-            amount: amount * 10,
+            amount: amount,
             authority,
           }),
         }
       );
 
       const result = await verifyRes.json();
+      console.log(result)
 
       if (result?.data?.code === 100 || result?.data?.code === 101) {
         const ref_id = result.data.ref_id;
@@ -43,7 +44,7 @@ export async function GET() {
           method: "PUT",
           headers: {
             Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjQsImlhdCI6MTc1MTY0Nzk1MCwiZXhwIjoxNzU0MjM5OTUwfQ.-KMMm4GnCQo3PwoMCwk_fK91MoSthGagqfTfre0XyYw",
+              `Bearer ${process.env.VERIFYTOKEN}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
@@ -61,7 +62,7 @@ export async function GET() {
           method: "PUT",
           headers: {
             Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjQsImlhdCI6MTc1MTY0Nzk1MCwiZXhwIjoxNzU0MjM5OTUwfQ.-KMMm4GnCQo3PwoMCwk_fK91MoSthGagqfTfre0XyYw",
+              `Bearer ${process.env.VERIFYTOKEN}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
