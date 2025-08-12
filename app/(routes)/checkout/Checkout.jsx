@@ -32,7 +32,6 @@ function Checkout() {
   const [subTotal, setSubTotal] = useState(0);
   const router = useRouter();
   const searchParams = useSearchParams();
-
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -127,7 +126,7 @@ function Checkout() {
 
   useEffect(() => {
     getCartItems();
-  }, [user, jwt]);
+  }, [user, jwt]); 
 
   const getCartItems = async () => {
     if (user && jwt && user.id) {
@@ -329,6 +328,7 @@ email: ${payload.data.email}`);
           amount: finalAmount,
           subTotal: subTotal,
           province: province,
+          placement : placement,
           selectedCityCode: selectedCityCode,
           userID: user.id,
           jwt: jwt,

@@ -13,10 +13,14 @@ export async function POST(req) {
       totalw += Number(element.weight);
     });
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_POST_URL}/api/package/GetPriceSadraIR?CityCode=${body.selectedCityCode}&StateCode=${body.province}&Weight=${totalw}&Price=${body.subTotal}&InCash=1`)
-    const tax = await res.json()
-
-    const finallamount = (total * 10) + tax.deliveryCost
+    let finallamount;
+    if(body.placement == "PP"){
+      const res = await fetch(`${process.env.NEXT_PUBLIC_POST_URL}/api/package/GetPriceSadraIR?CityCode=${body.selectedCityCode}&StateCode=${body.province}&Weight=${totalw}&Price=${body.subTotal}&InCash=1`)
+      const tax = await res.json()
+      finallamount = (total * 10) + tax.deliveryCost;
+    }else{
+      finallamount = (total * 10);
+    }
 
     if (body.amount == finallamount) {
 

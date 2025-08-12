@@ -52,12 +52,15 @@ const axiosClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_BASE_URL + "/api",
 });
 
-const cachedAxios = setupCache(axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BACKEND_BASE_URL + "/api",
-}), {
-  ttl: 5 * 60 * 1000,
-  debug: console.log,
-});
+const cachedAxios = setupCache(
+  axios.create({
+    baseURL: process.env.NEXT_PUBLIC_BACKEND_BASE_URL + "/api",
+  }),
+  {
+    ttl: 5 * 60 * 1000,
+    debug: console.log,
+  }
+);
 
 const getCategory = () => axiosClient.get("/categories?populate=*");
 const getSliders = () =>
@@ -221,6 +224,16 @@ const getProductBySlug = (slug) =>
       }));
     });
 
+const getProductInfobySlug = (slug) =>
+  cachedAxios
+    .get(
+      `/products?filters[slug][$eq]=${slug}&fields=slug&populate[productInfo]=*`
+    )
+    .then((resp) => {
+      const product = resp.data.data[0];
+      return product?.productInfo || [];
+    });
+
 const getForThisSession = async () => {
   const resp = await cachedAxios.get(
     `/products?filters[forThisSession]=true&populate=*`
@@ -255,4 +268,5 @@ export default {
   putPaymentId,
   getForThisSession,
   getvitrin,
+  getProductInfobySlug,
 };

@@ -20,7 +20,8 @@ function ProductSearchPage() {
   const [quantity, setQuantity] = useState(1);
   const [productTotalprice, setProductTotalPrice] = useState(0);
   const [categoryList, setCategoryList] = useState([]);
-  const [productList, setProductList]=useState([]);
+  const [productList, setProductList] = useState([]);
+  const [productInfo, setProductInfo] = useState([]);
 
   const { updateCart, setUpdateCart } = useContext(UpdateCartContext);
   const router = useRouter();
@@ -43,6 +44,10 @@ function ProductSearchPage() {
     const fetchProduct = async () => {
       try {
         const res = await GlobalApi.getProductBySlug(decodeURIComponent(slug));
+        const res2 = await GlobalApi.getProductInfobySlug(
+          decodeURIComponent(slug)
+        );
+        setProductInfo(res2);
         const fetchedProduct = res?.[0];
         setProduct(fetchedProduct);
         setProductTotalPrice(fetchedProduct?.mrp || 0);
@@ -84,7 +89,9 @@ function ProductSearchPage() {
         setUpdateCart(!updateCart);
         setAdding(false);
         toast("محصول به سبد خرید اضافه شد ✅");
-        sendTelegramMessage(`user (${user?.username})  => ${product?.namefa} => Cart list`);
+        sendTelegramMessage(
+          `user (${user?.username})  => ${product?.namefa} => Cart list`
+        );
       },
       (e) => {
         toast("مشکلی پیش اومد ❗");
@@ -96,14 +103,13 @@ function ProductSearchPage() {
   useEffect(() => {
     const fetchCategories = async () => {
       const categories = await GlobalApi.getCategoryList();
-      const productList=await GlobalApi.getAllProducts();
+      const productList = await GlobalApi.getAllProducts();
       setCategoryList(categories);
-      setProductList(productList)
+      setProductList(productList);
     };
 
     fetchCategories();
   }, []);
-
 
   if (loading) {
     return <LoadingOverlay loading={loading} />;
@@ -126,14 +132,27 @@ function ProductSearchPage() {
               className="h-130 w-[340px] object-contain border rounded-2xl"
             />
           </div>
-          <div dir="rtl" className="flex flex-col justify-between  gap-3 h-full">
+          <div
+            dir="rtl"
+            className="flex flex-col justify-between  gap-3 h-full"
+          >
             <h2 className="font-bold text-lg text-center">{product?.namefa}</h2>
             <h2 className="font-bold text-sm text-gray-500 whitespace-pre-line ">
               {product?.description}
-            </h2> 
-            { Number(product?.itemQuantityType) ? <h2>موجود در انبار : {product?.itemQuantityType} </h2> : <h2 className="text-xl  text-red-600 " >ناموجود</h2> }
+            </h2>
+            {Number(product?.itemQuantityType) ? (
+              <h2>موجود در انبار : {product?.itemQuantityType} </h2>
+            ) : (
+              <h2 className="text-xl  text-red-600 ">ناموجود</h2>
+            )}
             <h2 className="font-bold">
-              <span dir="ltr">قیمت:<span className="line-through font-bold text-gray-500" >{product.sellingPrice?.toLocaleString()}</span> {product?.mrp?.toLocaleString()} تومان</span>
+              <span dir="ltr">
+                قیمت:
+                <span className="line-through font-bold text-gray-500">
+                  {product.sellingPrice?.toLocaleString()}
+                </span>{" "}
+                {product?.mrp?.toLocaleString()} تومان
+              </span>
             </h2>
             <div className="flex flex-col items-start gap-3 mt-3">
               <div className="flex gap-3 items-center flex-wrap">
@@ -141,7 +160,7 @@ function ProductSearchPage() {
                   <button
                     className="hover:scale-150 transition-all ease-in-out"
                     onClick={() => setQuantity(quantity + 1)}
-                    disabled={Number(product?.itemQuantityType) <= quantity }
+                    disabled={Number(product?.itemQuantityType) <= quantity}
                   >
                     <img src="/plus.png" alt="" width={19} height={19} />
                   </button>
@@ -187,34 +206,35 @@ function ProductSearchPage() {
           </div>
         </div>
         <div className="lg:col-span-4">
-          <div lang="fa" dir="rtl" className="">
-            <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-2 gap-4">
-              {categoryList.map((category, index) => (
-                <Link
-                  onClick={load}
-                  href={"/products-category/" + category.name}
-                  key={index}
-                  className="flex flex-col items-center bg-green-200 gap-2 p-3 rounded-lg group cursor-pointer hover:bg-green-400"
-                >
-                  <Image
-                    src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${category?.image?.[0]?.url}`}
-                    alt=""
-                    width={50}
-                    height={50}
-                    className="group-hover:scale-125 transition-all ease-in-out"
-                  />
-                  <h2 className="text-green-800 text-sm text-center">
-                    {category?.namefa}
-                  </h2>
-                </Link>
-              ))}
-              {categoryList.length % 2 !== 0 ? (<div  className="hidden md:block flex-col items-center bg-green-200 gap-2 p-3 rounded-lg group cursor-pointer hover:bg-green-400" />) : null}
+          <div
+            lang="fa"
+            dir="rtl"
+            className="bg-white p-4 h-full border rounded-2xl flex flex-col justify-between"
+          >
+            <div>
+              {productInfo
+                .filter((item) => item.Value)
+                .map((item, index) => (
+                  <div key={index} className="p-2 flex justify-between">
+                    <h2 className="break-words max-w-[45%]">{item.Key}</h2>
+                    <h2 className="break-words max-w-[45%]">{item.Value}</h2>
+                  </div>
+                ))}
+            </div>
 
+            <div className="flex flex-col-reverse">
+              {productInfo
+                .filter((item) => item.Des)
+                .map((item, index) => (
+                  <div key={index} className="p-2">
+                    <h2 className="break-words">{item.Des}</h2>
+                  </div>
+                ))}
             </div>
           </div>
         </div>
       </div>
-      {/* <h2 className='font-bold text-green-600  flex justify-center b text-2xl text-right mt-10 '> دیگر محصولات</h2> */}
+      {/* <h2 className='font-bold text-emerald-950 flex justify-end b text-2xl text-right mt-10 '> دیگر محصولات</h2> */}
       <div>
         <ProductList productList={productList} />
       </div>
