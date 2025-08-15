@@ -122,55 +122,65 @@ function ProductSearchPage() {
   return (
     <div className="mt-10 px-4">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="bg-white lg:col-span-8 p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-5 border rounded-2xl">
-          <div className="flex justify-center items-center">
+        <div className="bg-white lg:col-span-8 p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-5 border rounded-2xl items-stretch">
+          <div className="flex justify-center items-center border rounded-2xl p-2">
             <Image
               src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${product?.images?.[0]?.url}`}
-              alt=""
-              width="500"
-              height="200"
-              className="h-130 w-[340px] object-contain border rounded-2xl"
+              alt={product?.namefa || "محصول"}
+              width={500}
+              height={200}
+              className="object-contain max-h-[400px] w-full"
             />
           </div>
-          <div
-            dir="rtl"
-            className="flex flex-col justify-between  gap-3 h-full"
-          >
-            <h2 className="font-bold text-lg text-center">{product?.namefa}</h2>
-            <h2 className="font-bold text-sm text-gray-500 whitespace-pre-line ">
-              {product?.description}
-            </h2>
-            {Number(product?.itemQuantityType) ? (
-              <h2>موجود در انبار : {product?.itemQuantityType} </h2>
-            ) : (
-              <h2 className="text-xl  text-red-600 ">ناموجود</h2>
-            )}
-            <h2 className="font-bold">
-              <span dir="ltr">
-                قیمت:
-                <span className="line-through font-bold text-gray-500">
-                  {product.sellingPrice?.toLocaleString()}
-                </span>{" "}
-                {product?.mrp?.toLocaleString()} تومان
-              </span>
-            </h2>
-            <div className="flex flex-col items-start gap-3 mt-3">
-              <div className="flex gap-3 items-center flex-wrap">
-                <div className="p-2 border flex gap-5 px-3 items-center rounded-2xl">
+
+          <div dir="rtl" className="flex flex-col justify-between gap-5 h-full">
+            <div className="space-y-3">
+              <h2 className="font-bold text-lg text-center">
+                {product?.namefa}
+              </h2>
+              <h2 className="font-bold text-sm text-gray-500 whitespace-pre-line">
+                {product?.description}
+              </h2>
+            </div>
+
+            <div className="flex flex-col gap-3 rounded-2xl border-b-4 border-r-2 border-r-fuchsia-500 border-t-4 border-t-fuchsia-400 border-b-fuchsia-600 p-3">
+              {Number(product?.itemQuantityType) ? (
+                <h2>
+                  موجود در انبار:{" "}
+                  <span className="bg-gradient-to-r from-fuchsia-500 to-purple-500 text-white px-3 pt-1 rounded-full">
+                    {product?.itemQuantityType}
+                  </span>
+                </h2>
+              ) : (
+                <h2 className="text-xl text-red-600">ناموجود</h2>
+              )}
+              <h2 className="font-bold">
+                <span dir="ltr">
+                  قیمت:{" "}
+                  <span className="line-through font-bold text-gray-500 ">
+                    {product.sellingPrice?.toLocaleString()}
+                  </span>
+                  <span className="rounded-2xl" >{""}{product?.mrp?.toLocaleString()}{" "}تومان </span> 
+                </span>
+              </h2>
+            </div>
+            <div className="flex flex-col items-start gap-4">
+              <div className="flex gap-4 items-center flex-wrap">
+                <div className="p-2 border flex gap-3 px-3 items-center rounded-2xl">
                   <button
-                    className="hover:scale-150 transition-all ease-in-out"
+                    className="hover:scale-125 transition-all ease-in-out"
                     onClick={() => setQuantity(quantity + 1)}
                     disabled={Number(product?.itemQuantityType) <= quantity}
                   >
-                    <img src="/plus.png" alt="" width={19} height={19} />
+                    <img src="/plus.png" alt="افزایش" width={19} height={19} />
                   </button>
                   <h2>{quantity}</h2>
                   <button
-                    className="hover:scale-150 transition-all ease-in-out"
+                    className="hover:scale-125 transition-all ease-in-out"
                     disabled={quantity === 1}
                     onClick={() => setQuantity(quantity - 1)}
                   >
-                    <img src="/minus.png" alt="" width={19} height={19} />
+                    <img src="/minus.png" alt="کاهش" width={19} height={19} />
                   </button>
                 </div>
                 <h2 className="text-sm font-bold">
@@ -205,6 +215,7 @@ function ProductSearchPage() {
             </div>
           </div>
         </div>
+
         <div className="lg:col-span-4">
           <div
             lang="fa"
@@ -215,18 +226,18 @@ function ProductSearchPage() {
               {productInfo
                 .filter((item) => item.Value)
                 .map((item, index) => (
-                  <div key={index} className="p-2 flex justify-between">
-                    <h2 className="break-words max-w-[45%]">{item.Key}</h2>
-                    <h2 className="break-words max-w-[45%]">{item.Value}</h2>
+                  <div key={index} className="p-2 flex border-b-2 rounded-2xl border-amber-500 justify-between">
+                    <h2 className="break-words max-w-[30%]">{item.Key}</h2>
+                    <h2 dir="ltr" className="break-words max-w-[70%]">{item.Value}</h2>
                   </div>
                 ))}
             </div>
 
-            <div className="flex flex-col-reverse">
+            <div className="flex flex-col-reverse mt-2">
               {productInfo
                 .filter((item) => item.Des)
                 .map((item, index) => (
-                  <div key={index} className="p-2">
+                  <div key={index} className="p-2 border-e-2 border-b-2 rounded-2xl  border-e-gray-700 border-b-blue-900 my-1 ">
                     <h2 className="break-words">{item.Des}</h2>
                   </div>
                 ))}
