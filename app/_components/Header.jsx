@@ -128,8 +128,8 @@ const Header = () => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const storedUser = JSON.parse(sessionStorage.getItem("user"));
-      const storedJwt = sessionStorage.getItem("jwt");
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+      const storedJwt = localStorage.getItem("jwt");
       setUser(storedUser);
       setJwt(storedJwt);
     }
@@ -137,7 +137,7 @@ const Header = () => {
 
   useEffect(() => {
     const checkLogin = () => {
-      const jwt = sessionStorage.getItem("jwt");
+      const jwt = localStorage.getItem("jwt");
       setIsLogin(!!jwt);
     };
 
@@ -154,7 +154,7 @@ const Header = () => {
 
   const onSignOut = () => {
     if (typeof window !== "undefined") {
-      sessionStorage.clear();
+      localStorage.clear();
       setIsLogin(false);
       sendTelegramMessage(`${user.email} siktir`);
       window.location.href = "/create-account";

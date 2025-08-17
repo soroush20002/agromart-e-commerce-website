@@ -109,8 +109,8 @@ function Checkout() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const storedUser = JSON.parse(sessionStorage.getItem("user"));
-      const storedJwt = sessionStorage.getItem("jwt");
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+      const storedJwt = localStorage.getItem("jwt");
       setUser(storedUser);
       setJwt(storedJwt);
     }
@@ -146,7 +146,7 @@ function Checkout() {
 
   useEffect(() => {
     const checkLogin = () => {
-      const jwt = sessionStorage.getItem("jwt");
+      const jwt = localStorage.getItem("jwt");
       setIsLogin(!!jwt);
     };
 
@@ -188,8 +188,8 @@ function Checkout() {
 
     if ((status === "OK" || status === "NOK") && authority) {
       setLoading(true);
-      const storedFinalAmount = sessionStorage.getItem("finalAmount");
-      const storedPlacement = sessionStorage.getItem("placement");
+      const storedFinalAmount = localStorage.getItem("finalAmount");
+      const storedPlacement = localStorage.getItem("placement");
 
       if (status === "OK" && parseFloat(subTotal) > 0) {
         const timer = setTimeout(() => {
@@ -202,7 +202,7 @@ function Checkout() {
                 sendTelegramMessage(`user ${user?.username} => 100 `);
                 const paymentId = res.data.ref_id;
                 const orderInfo = JSON.parse(
-                  sessionStorage.getItem("orderInfo")
+                  localStorage.getItem("orderInfo")
                 );
                 if (orderInfo) {
                   const finalPayload = {
@@ -233,32 +233,32 @@ function Checkout() {
                       });
                       router.replace("/order-confirmation");
                     });
-                    sessionStorage.removeItem("orderInfo");
-                    sessionStorage.removeItem("finalAmount");
-                    sessionStorage.removeItem("placement");
+                    localStorage.removeItem("orderInfo");
+                    localStorage.removeItem("finalAmount");
+                    localStorage.removeItem("placement");
                   } catch (err) {
                     console.error("Error sending data", err);
-                    sessionStorage.removeItem("orderInfo");
-                    sessionStorage.removeItem("finalAmount");
-                    sessionStorage.removeItem("placement");
+                    localStorage.removeItem("orderInfo");
+                    localStorage.removeItem("finalAmount");
+                    localStorage.removeItem("placement");
                     sendTelegramMessage(
                       `user ${user?.username} => ERROR in payment verify`
                     );
                   }
                 } else {
                   console.warn("OS!");
-                  sessionStorage.removeItem("orderInfo");
-                  sessionStorage.removeItem("finalAmount");
-                  sessionStorage.removeItem("placement");
+                  localStorage.removeItem("orderInfo");
+                  localStorage.removeItem("finalAmount");
+                  localStorage.removeItem("placement");
                 }
               } else {
                 toast(" پرداخت ناموفق❌ ");
                 sendTelegramMessage(
                   `user ${user?.username} => ERROR in payment verify`
                 );
-                sessionStorage.removeItem("orderInfo");
-                sessionStorage.removeItem("finalAmount");
-                sessionStorage.removeItem("placement");
+                localStorage.removeItem("orderInfo");
+                localStorage.removeItem("finalAmount");
+                localStorage.removeItem("placement");
               }
             })
             .catch((err) => {
@@ -267,9 +267,9 @@ function Checkout() {
               sendTelegramMessage(
                 `user ${user?.username} => ERROR in payment verify `
               );
-              sessionStorage.removeItem("orderInfo");
-              sessionStorage.removeItem("finalAmount");
-              sessionStorage.removeItem("placement");
+              localStorage.removeItem("orderInfo");
+              localStorage.removeItem("finalAmount");
+              localStorage.removeItem("placement");
             })
             .finally(() => {
               setLoading(false);
@@ -282,9 +282,9 @@ function Checkout() {
         sendTelegramMessage(
           `user ${user?.username} => payment canceled by user `
         );
-        sessionStorage.removeItem("orderInfo");
-        sessionStorage.removeItem("finalAmount");
-        sessionStorage.removeItem("placement");
+        localStorage.removeItem("orderInfo");
+        localStorage.removeItem("finalAmount");
+        localStorage.removeItem("placement");
 
         setLoading(false);
       }
@@ -310,7 +310,7 @@ function Checkout() {
         userId: user.id,
       },
     };
-    sessionStorage.setItem("orderInfo", JSON.stringify(payload.data));
+    localStorage.setItem("orderInfo", JSON.stringify(payload.data));
     sendTelegramMessage(`user ${user?.username} =>  
 totalOrderAmount:${JSON.stringify(payload.data.totalOrderAmount)}
 username: ${payload.data.username}
@@ -351,8 +351,8 @@ email: ${payload.data.email}`);
           `user ${user?.username} => transferd to the payment`
         );
         const resp = await GlobalApi.createOrder(fullPayload, jwt);
-        sessionStorage.setItem("finalAmount", finalAmount.toString());
-        sessionStorage.setItem("placement", placement);
+        localStorage.setItem("finalAmount", finalAmount.toString());
+        localStorage.setItem("placement", placement);
         window.location.href = `https://www.zarinpal.com/pg/StartPay/${data.data.authority}`;
       } else {
         console.error("PN:", data);

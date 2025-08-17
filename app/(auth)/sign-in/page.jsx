@@ -17,8 +17,8 @@ function SignIn() {
   const [phone, setPhone] = useState([]);
 
   useEffect(() => {
-    const jwt = sessionStorage.getItem("jwt");
-    const phone = sessionStorage.getItem("phone");
+    const jwt = localStorage.getItem("jwt");
+    const phone = localStorage.getItem("phone");
     if (jwt) {
       router.push("/");
     } else {
@@ -42,8 +42,8 @@ function SignIn() {
       if (response.status == 200) {
         GlobalApi.registerUser(phone, password, username).then(
           (resp) => {
-            sessionStorage.setItem("user", JSON.stringify(resp.data.user));
-            sessionStorage.setItem("jwt", resp.data.jwt);
+            localStorage.setItem("user", JSON.stringify(resp.data.user));
+            localStorage.setItem("jwt", resp.data.jwt);
             toast("حساب شما با موفقیت ایجاد شد✅");
             window.location.href = "/"
             setLoading(false);
@@ -51,8 +51,8 @@ function SignIn() {
           (e) => {
             GlobalApi.signIn(phone, password).then(
               (resp) => {
-                sessionStorage.setItem("user", JSON.stringify(resp.data.user));
-                sessionStorage.setItem("jwt", resp.data.jwt);
+                localStorage.setItem("user", JSON.stringify(resp.data.user));
+                localStorage.setItem("jwt", resp.data.jwt);
                 toast("ورود با موفقیت انجام شد✅");
                 window.location.href = "/"
                 setLoading(false);
@@ -99,7 +99,7 @@ function SignIn() {
           if (data.ok) {
             toast("کد با موفقیت ارسال شد ✅");
             router.push('/sign-in')
-            sessionStorage.setItem("phone", email);
+            localStorage.setItem("phone", email);
           } else {
             toast("ارسال کد با خطا مواجه شد ❗");
           }

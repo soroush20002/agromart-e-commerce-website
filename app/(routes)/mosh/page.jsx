@@ -26,8 +26,8 @@ export default function ChatPage() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const storedUser = JSON.parse(sessionStorage.getItem("user"));
-      const storedJwt = sessionStorage.getItem("jwt");
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+      const storedJwt = localStorage.getItem("jwt");
       setUser(storedUser);
       setJwt(storedJwt);
       if (window.innerWidth < 768) {
@@ -97,7 +97,7 @@ export default function ChatPage() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const jwtToken = sessionStorage.getItem("jwt");
+      const jwtToken = localStorage.getItem("jwt");
       if (!jwtToken) {
         router.push("/create-account");
         toast("ابتدا وارد حساب کاربری خود شوید");
@@ -111,13 +111,13 @@ export default function ChatPage() {
 
   const getUserChat = async () => {
     try {
-      const storedUser = JSON.parse(sessionStorage.getItem("user"));
+      const storedUser = JSON.parse(localStorage.getItem("user"));
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/sups?filters[ui][$eq]=${storedUser.id}&pagination[limit]=1000&populate=image`
       );
       setUserChat(response.data);
     } catch (error) {
-      const storedUser = sessionStorage.getItem("user");
+      const storedUser = localStorage.getItem("user");
       if (storedUser) {
         toast("مشکلی پیش آمده!");
       }
@@ -126,13 +126,13 @@ export default function ChatPage() {
 
   const getUserResponse = async () => {
     try {
-      const storedUser = JSON.parse(sessionStorage.getItem("user"));
+      const storedUser = JSON.parse(localStorage.getItem("user"));
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/Sup-responses?filters[ui][$eq]=${storedUser.id}&pagination[limit]=1000&populate=*`
       );
       setUserResponse(response.data);
     } catch (error) {
-      const storedUser = sessionStorage.getItem("user");
+      const storedUser = localStorage.getItem("user");
       if (storedUser) {
         toast("مشکلی پیش آمده!");
       }

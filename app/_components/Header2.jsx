@@ -20,8 +20,8 @@ function Header2() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const storedUser = JSON.parse(sessionStorage.getItem("user"));
-      const storedJwt = sessionStorage.getItem("jwt");
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+      const storedJwt = localStorage.getItem("jwt");
       setUser(storedUser);
       setJwt(storedJwt);
     }

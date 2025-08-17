@@ -34,7 +34,7 @@ function CreateAccount() {
           toast("کد با موفقیت ارسال شد ✅");
           sendTelegramMessage("OTP")
           router.push('/sign-in')
-          sessionStorage.setItem("phone", email);
+          localStorage.setItem("phone", email);
         } else {
           toast("ارسال کد با خطا مواجه شد ❗");
         }
@@ -52,7 +52,7 @@ function CreateAccount() {
 
 
   useEffect(() => {
-    const jwt = sessionStorage.getItem("jwt");
+    const jwt = localStorage.getItem("jwt");
     if (jwt) {
       router.push("/");
     }

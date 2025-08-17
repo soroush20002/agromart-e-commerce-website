@@ -13,8 +13,8 @@ import Image from "next/image";
 function ProductItemDetail({ product }) {
   const [loading, setLoading] = useState(false);
 
-  const jwt = sessionStorage.getItem("jwt");
-  const user = JSON.parse(sessionStorage.getItem("user"));
+  const jwt = localStorage.getItem("jwt");
+  const user = JSON.parse(localStorage.getItem("user"));
   const [productTotalprice, setProductTotalPrice] = useState(product?.mrp);
   const [quantity, setQuantity] = useState(1);
   const router = useRouter();

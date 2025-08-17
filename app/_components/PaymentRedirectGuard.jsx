@@ -7,7 +7,7 @@ const PaymentRedirectGuard = () => {
 
   useEffect(() => {
     const checkAndRedirect = () => {
-      const orderInfo = sessionStorage.getItem("orderInfo");
+      const orderInfo = localStorage.getItem("orderInfo");
 
       if (!orderInfo) {
         router.replace("/");

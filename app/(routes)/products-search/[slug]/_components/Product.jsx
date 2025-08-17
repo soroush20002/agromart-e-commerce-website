@@ -62,8 +62,8 @@ function ProductSearchPage() {
   }, [slug]);
 
   const addToCart = () => {
-    const jwt = sessionStorage.getItem("jwt");
-    const user = JSON.parse(sessionStorage.getItem("user"));
+    const jwt = localStorage.getItem("jwt");
+    const user = JSON.parse(localStorage.getItem("user"));
 
     if (!jwt) {
       router.push("/create-account");
