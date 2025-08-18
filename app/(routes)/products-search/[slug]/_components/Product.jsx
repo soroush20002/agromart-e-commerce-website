@@ -40,6 +40,8 @@ function ProductSearchPage() {
 
   useEffect(() => {
     if (!slug) return;
+    sessionStorage.removeItem("m")
+    sessionStorage.setItem("Slug",slug)
 
     const fetchProduct = async () => {
       try {
@@ -121,8 +123,8 @@ function ProductSearchPage() {
 
   return (
     <div className="mt-10 px-4">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="bg-white lg:col-span-8 p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-5 border rounded-2xl items-stretch">
+      <div className="grid  grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="bg-white lg:col-span-8 p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-5 border-2 border-neutral-200 rounded-2xl items-stretch">
           <div className="flex justify-center items-center border rounded-2xl p-2">
             <Image
               src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${product?.images?.[0]?.url}`}
@@ -220,7 +222,7 @@ function ProductSearchPage() {
           <div
             lang="fa"
             dir="rtl"
-            className="bg-white p-4 h-full border rounded-2xl flex flex-col justify-between"
+            className="bg-white border-2 border-gray-200 p-4 h-full  rounded-2xl flex flex-col justify-between"
           >
             <div>
               {productInfo
@@ -245,8 +247,9 @@ function ProductSearchPage() {
           </div>
         </div>
       </div>
-      {/* <h2 className='font-bold text-emerald-950 flex justify-end b text-2xl text-right mt-10 '> دیگر محصولات</h2> */}
-      <div>
+      <h2 className='font-bold text-emerald-950 flex justify-end b text-2xl text-right mt-10 '> دیگر محصول ها</h2>
+      <div className="border-t-3 border-t-emerald-900 rounded-l-3xl h-8 -translate-y-4 w-[calc(100%-10rem)] " ></div>
+      <div className="-translate-y-12" >
         <ProductList productList={productList} />
       </div>
     </div>

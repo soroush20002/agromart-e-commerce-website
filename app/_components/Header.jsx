@@ -155,6 +155,7 @@ const Header = () => {
   const onSignOut = () => {
     if (typeof window !== "undefined") {
       localStorage.clear();
+      sessionStorage.clear();
       setIsLogin(false);
       sendTelegramMessage(`${user.email} siktir`);
       window.location.href = "/create-account";
@@ -243,6 +244,20 @@ const Header = () => {
       router.push("/mosh");
     } else {
       toast("ابتدا وارد حساب کاربری خود شوید");
+      sessionStorage.removeItem("Slug");
+      sessionStorage.setItem("m","mosh");
+      router.push("/create-account");
+    }
+    sendTelegramMessage(`user (${user?.username})  => Mosh `);
+  };
+
+  const F = () => {
+    if (jwt) {
+      router.push("/my-order");
+    } else {
+      toast("ابتدا وارد حساب کاربری خود شوید");
+      sessionStorage.removeItem("Slug");
+      sessionStorage.setItem("m","my-order");
       router.push("/create-account");
     }
     sendTelegramMessage(`user (${user?.username})  => Mosh `);
@@ -252,8 +267,8 @@ const Header = () => {
     <div className="p-5 shadow-sm flex justify-between bg-white ">
       <div className="flex items-center gap-8">
         <Image src="/logo.png" alt="" width={200} height={50} />
-        <div className="hidden md:flex gap-3 items-center border rounded-full p-2 px-0 relative">
-          <div className="hidden lg:block translate-x-2.5 ">
+        <div className="hidden border-4 md:flex gap-3 items-center border rounded-full p-2 px-0 relative">
+          <div className="hidden lg:block translate-x-4.5 max-[1155px]:translate-x-8.5 ">
             <Link onClick={H} href={"/"}>
               <ConfigProvider
                 direction="rtl"
@@ -315,6 +330,20 @@ const Header = () => {
               {" "}
               <Button color="lime-10" variant="solid" size="larg" onClick={M}>
                 مشاوره رایگان
+              </Button>
+            </ConfigProvider>
+            <ConfigProvider
+              direction="rtl"
+              theme={{
+                token: {
+                  fontFamily: "Vazirmatn, sans-serif",
+                  colorPrimary: "#3f6600",
+                },
+              }}
+            >
+              {" "}
+              <Button color="lime-10" variant="solid" size="larg" onClick={F} >
+                پیگیری سفارش ها
               </Button>
             </ConfigProvider>
           </div>
@@ -457,7 +486,6 @@ const Header = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={onMyOrder}>سفارش‌ها</DropdownMenuItem>
               <DropdownMenuItem onClick={onSignOut}>
                 خروج از حساب
               </DropdownMenuItem>

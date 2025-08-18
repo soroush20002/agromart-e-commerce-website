@@ -36,6 +36,9 @@ export default function ChatPage() {
       const storedJwt = localStorage.getItem("jwt");
       setUser(storedUser);
       setJwt(storedJwt);
+      if(!storedJwt){
+        router.push('/create-account')
+      }
       if (window.innerWidth < 768) {
         window.scrollTo({
           top: 200,
@@ -84,6 +87,11 @@ export default function ChatPage() {
               rText: newMessage,
               ui: userUi,
               image: mediaId,
+            },
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${jwt}`,
             },
           }
         );
@@ -246,10 +254,10 @@ export default function ChatPage() {
     }
   }, [userUi]);
 
-  const Update = () =>{
+  const Update = () => {
     getUserChat();
     getUserResponse();
-  }
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 px-2 py-8 md:pb-0  md:translate-y-[0px] lg:translate-y-[-15px] translate-y-[-30px] ">
@@ -257,7 +265,7 @@ export default function ChatPage() {
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
           <div onClick={Update} className="bg-green-600 p-4">
             <h1 className="text-white text-lg md:text-xl font-semibold text-center">
-               {selectedUsername}
+              {selectedUsername}
             </h1>
           </div>
 
@@ -299,7 +307,6 @@ export default function ChatPage() {
                             alt={`image-${idx}`}
                             className="max-w-[100px] max-h-[100px] object-cover rounded-md"
                           />
-                          
                         ))}
                       </div>
                     )}
@@ -381,7 +388,8 @@ export default function ChatPage() {
             onClick={() => setSelectedUsername(entry)}
             className="p-2 shadow-xl flex flex-row gap-2 cursor-pointer mb-1 transition-colors duration-200 ease-in-out bg-green-100 hover:bg-green-900 rounded-2xl border-b"
           >
-            <Image width={25} height={25} src="/user.png" alt="" /> {entry} <span className="text-gray-600"  ></span>
+            <Image width={25} height={25} src="/user.png" alt="" /> {entry}{" "}
+            <span className="text-gray-600"></span>
           </div>
         ))}
       </div>

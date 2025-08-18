@@ -43,7 +43,7 @@ function ProductList({ productList, slicenum }) {
   const duplicatedList = [...productListo, ...productListo] 
 
   return (
-    <div className="relative w-full overflow-hidden h-[340px] mt-10">
+    <div className="relative w-full overflow-hidden h-[340px] mt-0">
       <div
         ref={sliderRef}
         className="absolute flex flex-row gap-5 left-0 top-0 product-scroll-horizontal"

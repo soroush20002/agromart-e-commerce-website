@@ -37,7 +37,7 @@ function ProductList({productList , slicenum}) {
   const productListo = sortedProducts.slice(0, slicenum);
  
   return (
-    <div className='mt-10' >
+    <div className='mt-0' >
         
         <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 md:gap-5 lg:gap-5 gap-1' >
             {productListo.map((product,index)=>(

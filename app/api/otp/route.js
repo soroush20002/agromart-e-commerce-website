@@ -3,6 +3,14 @@ import cache from "@/lib/cache";
 export async function POST(req) {
   const body = await req.json();
   const { phone } = body;
+  
+  const VOTP = cache.get(`otp:${phone}`)
+
+  if(VOTP){
+    return new Response(JSON.stringify({ error: "120s" }), {
+      status: 429,
+    });
+  }
 
   if (!phone) {
     return new Response(JSON.stringify({ error: "Phone number" }), {
@@ -13,7 +21,7 @@ export async function POST(req) {
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
 
-  cache.set(`otp:${phone}`, otp, 300);
+  cache.set(`otp:${phone}`, otp, 120);
 
 
   const normalizedPhone = phone.startsWith("+98")

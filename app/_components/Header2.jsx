@@ -99,11 +99,24 @@ function Header2() {
 
   const M = () => {
     if (jwt) {
-      pass;
+
     } else {
       toast("ابتدا وارد حساب کاربری خود شوید");
+      sessionStorage.removeItem("Slug");
+      sessionStorage.setItem("m","mosh");
     }
     sendTelegramMessage(`user (${user?.username})  => Mosh `);
+  };
+
+  const F = () => {
+    if (jwt) {
+
+    } else {
+      toast("ابتدا وارد حساب کاربری خود شوید");
+      sessionStorage.removeItem("Slug");
+      sessionStorage.setItem("m","my-order");
+    }
+    sendTelegramMessage(`user (${user?.username})  => my order `);
   };
 
   return (
@@ -125,6 +138,7 @@ function Header2() {
           { label: "صفحه اصلی", href: "/" },
           { label: "پشتیبانی", href: "/support" },
           { label: "درباره ما", href: "/about-us" },
+          { label: "پیگیری سفارش ها", href: jwt ? "/my-order" : "/create-account" },
           { label: "مشاوره رایگان", href: jwt ? "/mosh" : "/create-account" },
         ].map((item, index) => (
           <Link
@@ -162,6 +176,8 @@ function Header2() {
                     A();
                   } else if (item.label === "مشاوره رایگان") {
                     M();
+                  } else if (item.label === "پیگیری سفارش ها") {
+                    F();
                   }
                 }}
               >
