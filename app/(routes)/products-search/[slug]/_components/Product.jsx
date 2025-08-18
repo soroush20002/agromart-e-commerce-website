@@ -249,7 +249,7 @@ function ProductSearchPage() {
       </div>
       <h2 className='font-bold text-emerald-950 flex justify-end b text-2xl text-right mt-10 '> دیگر محصول ها</h2>
       <div className="border-t-3 border-t-emerald-900 rounded-l-3xl h-8 -translate-y-4 w-[calc(100%-10rem)] " ></div>
-      <div className="-translate-y-12" >
+      <div className="-translate-y-4" >
         <ProductList productList={productList} />
       </div>
     </div>

@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { Collapse, ConfigProvider } from "antd";
 import moment from "moment-jalaali";
 import LoadingOverlay from "@/app/_components/LoadingOverlay";
+import Ping from "@/app/_components/Ping"
 
 function Page() {
   const [user, setUser] = useState(null);
@@ -12,6 +13,7 @@ function Page() {
   const [orderList, setOrderList] = useState([]);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [orderSit, setOrderSit] = useState([])
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -49,7 +51,7 @@ function Page() {
           <h2>تا کنون سفارشی ثبت نکرده اید!</h2>
         </div>
       ) : (
-        <div className=" mt-10 mx-7 md:mx-20 shadow-xl rounded-[10px] bg-gray-100">
+        <div className=" mt-10 mx-7 md:mx-20 rounded-[10px] bg-gray-100">
           <ConfigProvider
             direction="rtl"
             theme={{
@@ -63,12 +65,19 @@ function Page() {
               accordion
               items={orderList.map((order) => ({
                 key: order.id,
-                label: !order?.paymentId
-                ? "در حال بررسی"
-                : order.paymentId === "پرداخت نشده"
-                  ? order.paymentId
-                  : `سفارش ${order.paymentId}`,
-              
+                label: (
+                  <div dir="ltr" className="flex justify-between">
+                    <span className="flex flex-row" >  {order.paymentId?.match(/\(([^)]+)\)/)?.[1].trim() || ""} {order.paymentId !== "پرداخت نشده" || !order.paymentId ? <div className="mx-5 scale-50" ><Ping/></div> : null}</span>
+                    <span>
+                      {!order?.paymentId
+                        ? "در حال بررسی"
+                        : order.paymentId === "پرداخت نشده"
+                          ? "پرداخت نشده"
+                          : " سفارش " + order.paymentId.match(/^([^\s(]+)/)?.[1] || ""
+                      }
+                    </span>
+                  </div>
+                ),
                 children: (
                   <div>
                     <p>
@@ -93,7 +102,7 @@ function Page() {
                               alt="icon"
                               width="100"
                               height="100"
-                              className="border p-0 rounded-2xl shadow-2xl mt-2"
+                              className="border p-0 rounded-2xl mt-2"
                             />
                             <div>
                               <p>{item?.product?.namefa}</p>

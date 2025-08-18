@@ -79,7 +79,13 @@ function CreateAccount() {
             <Input
               dir="rtl"
               placeholder="شماره همراه"
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                let value = e.target.value;
+                if (value.startsWith("98")) {
+                  value = "0" + value.slice(2);
+                }
+                setEmail(value);
+              }}
               className="w-full bg-transparent border-none border-b-2 border-green-200 text-gray-700 text-base px-2 py-[10px] focus:outline-none focus:border-green-500 placeholder:text-gray-400"
             />
             <i className="fa fa-phone absolute left-2 bottom-[10px] text-green-500 text-sm"></i>
