@@ -64,7 +64,7 @@ function ProductItemDetail({ product }) {
     <div
       lang="fa"
       dir="rtl"
-      className="grid grid-cols-1 md:grid-cols-2 p-3 text-black gap-5 rounded-2xl  "
+      className="grid grid-cols-1 md:grid-cols-2 p-2 text-black gap-5 rounded-2xl  "
     >
       <Image
         src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${product?.images?.[0]?.url}`}
