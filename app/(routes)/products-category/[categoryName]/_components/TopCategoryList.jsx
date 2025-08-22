@@ -44,7 +44,7 @@ function TopCategoryList({ categoryList, selectedCategory }) {
   }, [selectedCategory]);
 
   return (
-    <div className="flex gap-5 mt-9 overflow-x-auto overflow-y-hidden mx-2 md:mx-5 scrollbar-hide">
+    <div className="flex gap-5 mt-9 pb-2 overflow-x-auto overflow-y-hidden mx-2 md:mx-5 scrollbar-hide">
       {categoryList.map((category, index) => {
         const isSelected =
           activeCategory?.toLowerCase() === category?.name?.toLowerCase();

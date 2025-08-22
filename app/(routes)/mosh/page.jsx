@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { StarOutlined, UploadOutlined } from "@ant-design/icons";
 import { Button, ConfigProvider, Upload } from "antd";
 import { Trash2Icon } from "lucide-react";
-import Image from "next/image";
+import { Image } from 'antd';
 
 export default function ChatPage() {
   const [messages, setMessages] = useState([]);
@@ -80,6 +80,11 @@ export default function ChatPage() {
               ui: user.id,
               image: mediaId,
             },
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${jwt}`,
+            },
           }
         );
         getUserChat();
@@ -106,14 +111,23 @@ export default function ChatPage() {
   }, []);
 
   useEffect(() => {
-    getUserChat();
-  }, [newMessage]);
+    if (jwt && user) {
+      getUserChat();
+      getUserResponse()
+    }
+  }, [jwt, user]);
+  
 
   const getUserChat = async () => {
     try {
       const storedUser = JSON.parse(localStorage.getItem("user"));
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/sups?filters[ui][$eq]=${storedUser.id}&pagination[limit]=1000&populate=image`
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/sups?filters[ui][$eq]=${storedUser.id}&pagination[limit]=1000&populate=image`,
+        {
+          headers: {
+            Authorization: `Bearer ${jwt}`,
+          },
+        }
       );
       setUserChat(response.data);
     } catch (error) {
@@ -128,7 +142,12 @@ export default function ChatPage() {
     try {
       const storedUser = JSON.parse(localStorage.getItem("user"));
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/Sup-responses?filters[ui][$eq]=${storedUser.id}&pagination[limit]=1000&populate=*`
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/Sup-responses?filters[ui][$eq]=${storedUser.id}&pagination[limit]=1000&populate=*`,
+        {
+          headers: {
+            Authorization: `Bearer ${jwt}`,
+          },
+        }
       );
       setUserResponse(response.data);
     } catch (error) {
@@ -145,9 +164,9 @@ export default function ChatPage() {
 
   //   return () => clearInterval(interval);
   // }, []);
-  useEffect(()=>{
-    getUserResponse()
-  },[])
+  // useEffect(()=>{
+  //   getUserResponse()
+  // },[])
 
   
 
@@ -197,7 +216,7 @@ export default function ChatPage() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 px-2 py-8 md:pb-0  md:translate-y-[0px] lg:translate-y-[-15px] translate-y-[-30px] ">
       <div className="lg:order-2 lg:w-full">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="bg-gradient-to-r from-teal-100 to-lime-100 rounded-lg shadow-lg overflow-hidden">
           <div className="bg-green-600 p-4">
             <h1 className="text-white text-lg md:text-xl font-semibold text-center">
               مشاوره رایگان{" "}
@@ -205,7 +224,7 @@ export default function ChatPage() {
           </div>
 
           <div
-            className="h-[550px] bg-green-50 md:h-[300px] lg:h-[300px] overflow-y-auto p-4 space-y-4"
+            className="h-[450px] bg-gradient-to-r from-teal-100 to-lime-100 md:h-[300px] lg:h-[300px] overflow-y-auto p-4 space-y-4"
             ref={chatContainerRef}
             onScroll={handleScroll}
             dir="rtl"
@@ -252,7 +271,7 @@ export default function ChatPage() {
 
           <form
             onSubmit={handleSendMessage}
-            className="p-4 border-t animate-[slideInUp_0.5s_ease-in-out]"
+            className="p-4 animate-[slideInUp_0.5s_ease-in-out]"
           >
             <div className="flex flex-col gap-3 md:gap-2 items-stretch">
               <ConfigProvider
@@ -286,29 +305,33 @@ export default function ChatPage() {
                 </div>
               </ConfigProvider>
 
+              <div className="flex flex-row gap-2" >
+
               <input
                 type="text"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 placeholder="پیام خود را بنویسید..."
-                className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 hover:shadow-md text-sm md:text-base"
+                className="flex-1 p-2 border-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 hover:shadow-md text-sm md:text-base"
                 dir="rtl"
               />
               <button
                 type="submit"
                 disabled={isSending}
-                className={`bg-green-600 text-white px-4 md:px-6 py-2 rounded-lg transition-all duration-300 hover:shadow-lg flex items-center justify-center min-w-[70px] md:min-w-[80px] text-sm md:text-base ${
+                className={` text-white px-0 md:px-0 py-1 rounded-lg transition-all duration-300 hover:shadow-lg flex items-center justify-center min-w-[70px] md:min-w-[80px] text-sm md:text-base ${
                   isSending
                     ? "opacity-70 cursor-not-allowed"
-                    : "hover:bg-green-700 hover:scale-105 active:scale-95"
+                    : "hover:bg-green-700 hover:scale-105 active:scale-9"
                 }`}
               >
                 {isSending ? (
-                  <div className="w-4 md:w-5 h-4 md:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-10 md:w-10 h-10 md:h-10 border-5 border-emerald-950 border-t-transparent rounded-full animate-spin"></div>
                 ) : (
-                  "ارسال"
+                  <img src="/send.png" className=" w-10 h-10" />
                 )}
               </button>
+              </div>
+
             </div>
           </form>
         </div>

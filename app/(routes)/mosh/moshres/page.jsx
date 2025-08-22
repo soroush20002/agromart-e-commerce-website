@@ -8,8 +8,10 @@ import { toast } from "sonner";
 import { StarOutlined, UploadOutlined } from "@ant-design/icons";
 import { Button, ConfigProvider, Upload } from "antd";
 import { Trash2Icon } from "lucide-react";
-import Image from "next/image";
+import { Image } from 'antd';
 import { BlinkBlur } from "react-loading-indicators";
+import Error from "@/app/_components/Error";
+import LoadingOverlay from "@/app/_components/LoadingOverlay";
 
 export default function ChatPage() {
   const [messages, setMessages] = useState([]);
@@ -27,8 +29,49 @@ export default function ChatPage() {
   const chatContainerRef = useRef(null);
   const [usersData, setUsersData] = useState([]);
   const [userUi, setUserUi] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loading2, setLoading2] = useState(false);
   const router = useRouter();
+  const [isAdmin, setIsAdmin] = useState(true);
+
+  useEffect(() => {
+    if (!jwt || !user) return;
+
+    const checkIfAdmin = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/users/me?populate=role`,
+          {
+            headers: {
+              Authorization: `Bearer ${jwt}`,
+            },
+          }
+        );
+
+        const userData = response.data;
+
+        if (userData?.role?.name === "Admin") {
+          setIsAdmin(true);
+        } else {
+          setIsAdmin(false);
+        }
+      } catch (error) {
+        if (error.response?.status === 401) {
+          setIsAdmin(false);
+        } else if (error.response?.status === 403) {
+          setIsAdmin(false);
+        } else {
+          toast("مشکلی پیش امده");
+        }
+        setIsAdmin(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkIfAdmin();
+  }, [jwt, user]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -36,8 +79,8 @@ export default function ChatPage() {
       const storedJwt = localStorage.getItem("jwt");
       setUser(storedUser);
       setJwt(storedJwt);
-      if(!storedJwt){
-        router.push('/create-account')
+      if (!storedJwt) {
+        router.push("/create-account");
       }
       if (window.innerWidth < 768) {
         window.scrollTo({
@@ -119,14 +162,21 @@ export default function ChatPage() {
   }, []);
 
   useEffect(() => {
-    getUserChat();
+    if (jwt && user) {
+      getUserChat();
+    }
   }, [newMessage]);
 
   const getUserChat = async () => {
     try {
       const storedUser = JSON.parse(localStorage.getItem("user"));
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/sups?filters[ui][$eq]=${userUi}&pagination[limit]=1000&populate=image`
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/sups?filters[ui][$eq]=${userUi}&pagination[limit]=1000&populate=image`,
+        {
+          headers: {
+            Authorization: `Bearer ${jwt}`,
+          },
+        }
       );
       setUserChat(response.data);
     } catch (error) {
@@ -138,31 +188,35 @@ export default function ChatPage() {
   };
 
   const getUserResponse = async () => {
-    setLoading(true);
     try {
       const storedUser = JSON.parse(localStorage.getItem("user"));
       const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/Sup-responses?filters[ui][$eq]=${userUi}&pagination[limit]=1000&populate=*`
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/Sup-responses?filters[ui][$eq]=${userUi}&pagination[limit]=1000&populate=*`,
+        {
+          headers: {
+            Authorization: `Bearer ${jwt}`,
+          },
+        }
       );
       setUserResponse(response.data);
-      setLoading(false);
     } catch (error) {
       const storedUser = localStorage.getItem("user");
       if (storedUser) {
         toast("مشکلی پیش آمده!");
       }
-      setLoading(false);
+    } finally {
+      setLoading2(false);
     }
   };
-  useEffect(() => {
-    if (!userUi) return;
+  // useEffect(() => {
+  //   if (!userUi) return;
 
-    const interval = setInterval(() => {
-      getUserResponse();
-    }, 60000);
+  //   const interval = setInterval(() => {
+  //     getUserResponse();
+  //   }, 60000);
 
-    return () => clearInterval(interval);
-  }, [userUi]);
+  //   return () => clearInterval(interval);
+  // }, [userUi]);
 
   const uploadProps = {
     name: "files",
@@ -210,7 +264,12 @@ export default function ChatPage() {
   const getUserChatList = async () => {
     try {
       const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/sups?populate=users_permissions_users&pagination[limit]=1000`
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/sups?populate=users_permissions_users&pagination[limit]=1000`,
+        {
+          headers: {
+            Authorization: `Bearer ${jwt}`,
+          },
+        }
       );
       const data = res.data.data;
       setUsersData(data);
@@ -230,8 +289,10 @@ export default function ChatPage() {
   };
 
   useEffect(() => {
-    getUserChatList();
-  }, []);
+    if (jwt && user) {
+      getUserChatList();
+    }
+  }, [jwt, user]);
 
   useEffect(() => {
     if (!selectedUsername) return;
@@ -248,9 +309,11 @@ export default function ChatPage() {
   }, [selectedUsername]);
 
   useEffect(() => {
-    if (userUi) {
-      getUserChat();
-      getUserResponse();
+    if (jwt && user) {
+      if (userUi) {
+        getUserChat();
+        getUserResponse();
+      }
     }
   }, [userUi]);
 
@@ -259,65 +322,74 @@ export default function ChatPage() {
     getUserResponse();
   };
 
+  if (!isAdmin) return <Error text={"شما اجازه دسترسی به این بخش ندارید"} />;
+  if (loading) return <LoadingOverlay loading={true} />;
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 px-2 py-8 md:pb-0  md:translate-y-[0px] lg:translate-y-[-15px] translate-y-[-30px] ">
       <div className="lg:order-2 lg:w-full">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="bg-gradient-to-r from-teal-100 to-lime-100 rounded-lg shadow-lg overflow-hidden">
           <div onClick={Update} className="bg-green-600 p-4">
             <h1 className="text-white text-lg md:text-xl font-semibold text-center">
               {selectedUsername}
             </h1>
           </div>
 
-          <div
-            className="h-[550px] bg-green-50 md:h-[300px] lg:h-[300px] overflow-y-auto p-4 space-y-4"
-            ref={chatContainerRef}
-            onScroll={handleScroll}
-            dir="rtl"
-          >
-            {[...(userResponse?.data || []), ...(userChat?.data || [])]
-              .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-              .map((message, index) => (
-                <div
-                  key={`${message.id}-${index}`}
-                  className={`flex ${
-                    message.rText ? "justify-start" : "justify-end"
-                  }`}
-                >
+          {loading2 ? (
+            <div className="h-[550px] md:h-[300px] lg:h-[300px] p-4 flex items-center justify-center">
+              <BlinkBlur color="#32cd32" text="" textColor="" />
+            </div>
+          ) : (
+            <div
+              className="h-[550px] bg-gradient-to-r from-teal-100 to-lime-100 md:h-[300px] lg:h-[300px] overflow-y-auto p-4 space-y-4"
+              ref={chatContainerRef}
+              onScroll={handleScroll}
+              dir="rtl"
+            >
+              {[...(userResponse?.data || []), ...(userChat?.data || [])]
+                .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+                .map((message, index) => (
                   <div
-                    className={`max-w-[85%] md:max-w-[70%] rounded-lg p-3 text-sm md:text-base ${
-                      message.rText
-                        ? "bg-green-500 text-white"
-                        : "bg-gray-200 text-gray-800"
+                    key={`${message.id}-${index}`}
+                    className={`flex ${
+                      message.rText ? "justify-start" : "justify-end"
                     }`}
                   >
-                    {message.rText || message.uText}
+                    <div
+                      className={`max-w-[85%] md:max-w-[70%] rounded-lg p-3 text-sm md:text-base ${
+                        message.rText
+                          ? "bg-green-500 text-white"
+                          : "bg-gray-200 text-gray-800"
+                      }`}
+                    >
+                      {message.rText || message.uText}
 
-                    {message.image && message.image.length > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {message.image.map((img, idx) => (
-                          <Image
-                            key={idx}
-                            width={100}
-                            height={100}
-                            src={
-                              `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${img?.url}` ||
-                              img
-                            }
-                            alt={`image-${idx}`}
-                            className="max-w-[100px] max-h-[100px] object-cover rounded-md"
-                          />
-                        ))}
-                      </div>
-                    )}
+                      {message.image && message.image.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {message.image.map((img, idx) => (
+                            <Image
+                              key={idx}
+                              width={100}
+                              height={100}
+                              src={
+                                `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${img?.url}` ||
+                                img
+                              }
+                              alt={`image-${idx}`}
+                              className="max-w-[100px] max-h-[100px] object-cover rounded-md"
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
-          </div>
+                ))}
+            </div>
+          )}
 
           <form
             onSubmit={handleSendMessage}
-            className="p-4 border-t animate-[slideInUp_0.5s_ease-in-out]"
+            className="p-4  animate-[slideInUp_0.5s_ease-in-out]"
           >
             <div className="flex flex-col gap-3 md:gap-2 items-stretch">
               <ConfigProvider
@@ -351,41 +423,43 @@ export default function ChatPage() {
                 </div>
               </ConfigProvider>
 
-              <input
-                type="text"
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="پیام خود را بنویسید..."
-                className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 hover:shadow-md text-sm md:text-base"
-                dir="rtl"
-              />
-              <button
-                type="submit"
-                disabled={isSending}
-                className={`bg-green-600 text-white px-4 md:px-6 py-2 rounded-lg transition-all duration-300 hover:shadow-lg flex items-center justify-center min-w-[70px] md:min-w-[80px] text-sm md:text-base ${
-                  isSending
-                    ? "opacity-70 cursor-not-allowed"
-                    : "hover:bg-green-700 hover:scale-105 active:scale-95"
-                }`}
-              >
-                {isSending ? (
-                  <div className="w-4 md:w-5 h-4 md:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                ) : (
-                  "ارسال"
-                )}
-              </button>
+              <div className="flex flex-row gap-2">
+                <input
+                  type="text"
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  placeholder="پیام خود را بنویسید..."
+                  className="flex-1 p-2 border-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 hover:shadow-md text-sm md:text-base"
+                  dir="rtl"
+                />
+                <button
+                  type="submit"
+                  disabled={isSending}
+                  className={` text-white px-0 md:px-0 py-1 rounded-lg transition-all duration-300 hover:shadow-lg flex items-center justify-center min-w-[70px] md:min-w-[80px] text-sm md:text-base ${
+                    isSending
+                      ? "opacity-70 cursor-not-allowed"
+                      : "hover:bg-green-700 hover:scale-105 active:scale-9"
+                  }`}
+                >
+                  {isSending ? (
+                    <div className="w-10 md:w-10 h-10 md:h-10 border-5 border-emerald-950 border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <img src="/send.png" className=" w-10 h-10" />
+                  )}
+                </button>
+              </div>
             </div>
           </form>
         </div>
       </div>
       <div
         dir="ltr"
-        className="lg:order-1 lg:w-full bg-white rounded-lg shadow-lg p-6"
+        className="lg:order-1 lg:w-full bg-white rounded-lg border-4 shadow-lg p-6"
       >
         {uniqueUserMessages.map((entry, index) => (
           <div
             key={index}
-            onClick={() => setSelectedUsername(entry)}
+            onClick={() => (setSelectedUsername(entry), setLoading2(true))}
             className="p-2 shadow-xl flex flex-row gap-2 cursor-pointer mb-1 transition-colors duration-200 ease-in-out bg-green-100 hover:bg-green-900 rounded-2xl border-b"
           >
             <Image width={25} height={25} src="/user.png" alt="" /> {entry}{" "}
@@ -393,11 +467,6 @@ export default function ChatPage() {
           </div>
         ))}
       </div>
-      {loading ? (
-        <div className="  flex-col font-extrabold fixed inset-0 flex items-center justify-center bg-black/60 scale-100 backdrop-blur-md z-50">
-          <BlinkBlur color="#32cd32" text="" textColor="" />
-        </div>
-      ) : null}
     </div>
   );
 }

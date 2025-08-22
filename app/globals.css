@@ -23,6 +23,19 @@ body {
   font-weight: bold;
   background-color: #f0fdf4;
 }
+div::-webkit-scrollbar {
+  width: 8px;
+}
+
+div::-webkit-scrollbar-track {
+
+  border-radius: 10px;
+}
+
+div::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #66af4e, #25fc66);
+  border-radius: 10px;
+}
 
 @theme inline {
   --color-background: var(--background);
