@@ -31,17 +31,17 @@ function Producitem({ product }) {
     }
   }, []);
 
-  const showLoading = () => {
-    setOpen(true);
-    setLoading(true);
-    sendTelegramMessage(`user ${user?.username} => ${product?.namefa}`);
+  // const showLoading = () => {
+  //   setOpen(true);
+  //   setLoading(true);
+  //   sendTelegramMessage(`user ${user?.username} => ${product?.namefa}`);
 
-    setTimeout(() => {
-      setLoading(false);
-    }, 2000);
-  };
+  //   setTimeout(() => {
+  //     setLoading(false);
+  //   }, 2000);
+  // };
   return (
-    <Link href={`/products-search/${product?.slug}`}>
+    <Link onClick={()=>sendTelegramMessage(`user ${user?.username} => ${product?.namefa}`)} href={`/products-search/${product?.slug}`}>
       <div className="bg-white h-70 active:scale-90 p-2 md:p-2 flex flex-col items-center justify-center gap-1 border rounded-b-lg mt-6 hover:scale-110 hover:shadow-lg transition-all ease-in-out cursor-pointer rounded-2xl  ">
         <Image
           src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}${product?.images?.[0]?.url}`}

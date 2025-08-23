@@ -64,7 +64,9 @@ function Header2() {
     setSearchText(value);
 
     if (value.trim().length > 1) {
-      const res = await fetch("https://agri.liara.run/api/products");
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/api/products?pagination[limit]=200`
+      );
       const data = await res.json();
       const allProducts = data?.data || [];
 
@@ -99,22 +101,20 @@ function Header2() {
 
   const M = () => {
     if (jwt) {
-
     } else {
       toast("ابتدا وارد حساب کاربری خود شوید");
       sessionStorage.removeItem("Slug");
-      sessionStorage.setItem("m","mosh");
+      sessionStorage.setItem("m", "mosh");
     }
     sendTelegramMessage(`user (${user?.username})  => Mosh `);
   };
 
   const F = () => {
     if (jwt) {
-
     } else {
       toast("ابتدا وارد حساب کاربری خود شوید");
       sessionStorage.removeItem("Slug");
-      sessionStorage.setItem("m","my-order");
+      sessionStorage.setItem("m", "my-order");
     }
     sendTelegramMessage(`user (${user?.username})  => my order `);
   };
@@ -138,7 +138,10 @@ function Header2() {
           { label: "صفحه اصلی", href: "/" },
           { label: "پشتیبانی", href: "/support" },
           { label: "درباره ما", href: "/about-us" },
-          { label: "پیگیری سفارش ها", href: jwt ? "/my-order" : "/create-account" },
+          {
+            label: "پیگیری سفارش ها",
+            href: jwt ? "/my-order" : "/create-account",
+          },
           { label: "مشاوره رایگان", href: jwt ? "/mosh" : "/create-account" },
         ].map((item, index) => (
           <Link
@@ -191,7 +194,7 @@ function Header2() {
           className={`
     hidden
     max-[768px]:flex
-    border rounded-md px-2 py-1 items-center gap-2
+    border-3 rounded-full px-3 py-2 items-center gap-2
     w-full
     mt-2
   `}
